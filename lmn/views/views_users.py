@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.contrib.messages import success
 from django.contrib.messages import get_messages
-
+from django.contrib.auth import logout
 
 from ..forms import UserRegistrationForm
 from ..models import Note

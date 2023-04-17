@@ -1,8 +1,9 @@
-from django.test import TestCase
+from django.test import TestCase, Client
 
 from django.urls import reverse
 from django.contrib import auth
 from django.contrib.auth import authenticate
+from django.contrib.messages import get_messages
 
 import re
 import datetime
@@ -500,6 +501,20 @@ class TestUserAuthentication(TestCase):
         new_user = authenticate(username='sam12345', password='feRpj4w4pso3az@1!2')
         self.assertRedirects(response, reverse('user_profile', kwargs={"user_pk": new_user.pk}))   
         self.assertContains(response, 'sam12345')  # page has user's username on it
+
+
+class LogoutViewTestCase(TestCase):
+    def test_logout_view(self):
+        user = User.objects.create_user(
+            username='testuser', email='testuser@example.com', password='testpass'
+        )
+        client = Client()
+        client.force_login(user)
+        response = client.get(reverse('logout'))
+        self.assertRedirects(response, reverse('homepage'))
+        messages = list(get_messages(response.wsgi_request))
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(str(messages[0]), 'You have been logged out.')
 
 
 class TestErrorViews(TestCase):

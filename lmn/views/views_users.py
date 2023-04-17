@@ -3,6 +3,9 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
+from django.contrib.messages import success
+from django.contrib.messages import get_messages
+
 
 from ..forms import UserRegistrationForm
 from ..models import Note
@@ -23,10 +26,11 @@ def my_user_profile(request):
     # TODO - editable version for logged-in user to edit their own profile
     return redirect('user_profile', user_pk=request.user.pk)
 
-
-def homepage(request):
-    logged_out = request.GET.get('logged_out', False)
-    return render(request, 'homepage.html', {'logged_out': logged_out})
+@login_required
+def logout_view(request):
+    logout(request)
+    messages.success(request, 'You have been logged out.')
+    return redirect('homepage')
 
 
 def register(request):

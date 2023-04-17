@@ -78,14 +78,14 @@ DATABASES = {
 
     # Uncomment this when you are ready to use Postgres.
 
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.postgresql',
-    #     'NAME': '',
-    #     'USER': '',
-    #     'PASSWORD': os.environ[''],
-    #     'HOST': '',
-    #     'PORT': '5432',
-    # },
+    #  'default': {
+    #      'ENGINE': 'django.db.backends.postgresql',
+    #      'NAME': 'lztzxtkw',
+    #      'USER': 'lztzxtkw',
+    #      'PASSWORD': os.environ['LMNOP_DB_PW'],
+    #      'HOST': 'lallah.db.elephantsql.com',
+    #      'PORT': '5432',
+    #  },
 
     # And when you use Postgres, comment out or remove this DB config. 
     # Using environment variables to detect where this app is running, and automatically use 

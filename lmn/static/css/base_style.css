@@ -4,10 +4,6 @@ body {
   color: antiquewhite;
 }
 
-a {
-  color: #18eef5;
-}
-
 #add-new-show-link {
   font-size: large;
   color: violet;
@@ -24,4 +20,129 @@ a {
   border-radius: 5px;
   padding: 2px;
   margin: 2px;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+}
+
+h2 {
+  text-align: center;
+  margin-top: 50px;
+}
+
+.message {
+  padding: 10px;
+  margin-bottom: 20px;
+}
+
+.messages {
+  list-style: none;
+  margin-bottom: 20px;
+}
+
+.messages li {
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 3px;
+}
+
+.messages li.error {
+  background-color: #ffb3b3;
+}
+
+form {
+  margin: 0 auto;
+  width: 300px;
+  padding: 20px;
+  border-radius: 3px;
+}
+
+label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+input[type="text"], input[type="email"], input[type="password"], input[type="submit"] {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 3px;
+  margin-bottom: 20px;
+}
+
+button[type="submit"] {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+a {
+  color: #4CAF50;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+#artist-detail-title {
+  margin-top: 100px;
+}
+
+#artist-name {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+#welcome {
+  margin-top: 50px;
+  text-align: center;
+}
+
+#welcome p {
+  font-size: 24px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  margin-bottom: 30px;
+}
+
+#artist-list-title {
+  margin-top: 40px;
+}
+
+#clear_search {
+  font-size: 14px;
+  margin-left: 16px;
+  color: #999;
+  text-decoration: none;
+}
+
+#clear_search:hover {
+  text-decoration: underline;
+}
+
+.artist {
+  border-bottom: 1px solid #ccc;
+  padding: 16px 0;
+}
+
+.artist p {
+  margin: 0;
+}
+
+.artist a:hover {
+  text-decoration: underline;
+}
+
+#artist_list input[type="text"] {
+  width: 400px;
 }

@@ -24,6 +24,11 @@ def my_user_profile(request):
     return redirect('user_profile', user_pk=request.user.pk)
 
 
+def homepage(request):
+    logged_out = request.GET.get('logged_out', False)
+    return render(request, 'homepage.html', {'logged_out': logged_out})
+
+
 def register(request):
     """ Handles user registration flow
 

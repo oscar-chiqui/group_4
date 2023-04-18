@@ -4,6 +4,9 @@ from django.urls import reverse
 from django.contrib import auth
 from django.contrib.auth import authenticate
 from django.contrib.messages import get_messages
+from django.contrib import messages
+from django.test.client import RequestFactory
+from django.dispatch import Signal
 
 import re
 import datetime
@@ -503,16 +506,28 @@ class TestUserAuthentication(TestCase):
         self.assertContains(response, 'sam12345')  # page has user's username on it
 
 
-class LogoutViewTestCase(TestCase):
-    def test_logout_view(self):
-        user = User.objects.create_user(
-            username='testuser', email='testuser@example.com', password='testpass'
+class UserLogoutTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_user(
+            username='testuser',
+            email='testuser@example.com',
+            password='password'
         )
-        client = Client()
-        client.force_login(user)
-        response = client.get(reverse('logout'))
-        self.assertRedirects(response, reverse('homepage'))
-        messages = list(get_messages(response.wsgi_request))
+
+    def test_user_logout_message(self):
+        # Force login the user
+        self.client.force_login(self.user)
+
+        # Make request to logout url
+        response = self.client.get(reverse('logout'), follow=True)
+
+        # Assert the homepage is shown
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'lmn/home.html')
+
+        # Assert that the homepage shows the "you are logged out" message
+        messages = list(response.context['messages'])
         self.assertEqual(len(messages), 1)
         self.assertEqual(str(messages[0]), 'You have been logged out.')
 

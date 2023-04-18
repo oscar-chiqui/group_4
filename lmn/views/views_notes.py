@@ -25,6 +25,21 @@ def new_note(request, show_pk):
 
     return render(request, 'lmn/notes/new_note.html', {'form': form, 'show': show})
 
+@login_required
+def edit_notes(request, note_pk):
+    """ Edit a particular note about a show """
+    note = get_object_or_404(Note, pk=note_pk)
+    
+    if request.method == 'POST':
+        form = NewNoteForm(request.POST, instance=note) # loads the existing note data on the form
+        if form.is_valid():
+            form.save()
+            return redirect('note_detail', note_pk=note_pk)
+    else:
+        form = NewNoteForm(instance=note)
+    return render(request, 'lmn/notes/note_detail.html', {'note': note })
+    
+
 
 def latest_notes(request):
     """ Get the 20 most recent notes, ordered with most recent first. """

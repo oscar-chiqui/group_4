@@ -12,6 +12,7 @@
   user is a variable provided to the template and is the current logged-in user 
 
   -->
+  {% if user_profile.pk == request.user.pk %}
   
   <h1 id="user-fullname-profile">Welcome, {{user_profile.first_name}}!</h1>
   <p>username: {{user_profile.username}} | email: {{user_profile.email}} | full name: {{user_profile.first_name}} {{user_profile.last_name}}</p>
@@ -19,6 +20,8 @@
   <form method="link" action="{% url 'edit_user_profile' %}">
     <button>Edit Profile</button>
   </form>
+
+  {% endif %}
 
   <h2 id="username-notes">{{ user_profile.username }}'s notes</h2>
 

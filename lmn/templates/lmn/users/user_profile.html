@@ -4,16 +4,21 @@
 
   <!-- A user's profile page.
 
-  Includes list of user's notes with title and preview of text.
+  Includes current user information (minus password) 
+  and list of user's notes with title and preview of text.
   Text truncated to 300 characters. 
 
   user_profile is the user that this profile is about 
   user is a variable provided to the template and is the current logged-in user 
 
   -->
-
+  
   <h1 id="user-fullname-profile">Welcome, {{user_profile.first_name}}!</h1>
   <p>username: {{user_profile.username}} | email: {{user_profile.email}} | full name: {{user_profile.first_name}} {{user_profile.last_name}}</p>
+
+  <form method="link" action="{% url 'edit_user_profile' %}">
+    <button>Edit Profile</button>
+  </form>
 
   <h2 id="username-notes">{{ user_profile.username }}'s notes</h2>
 

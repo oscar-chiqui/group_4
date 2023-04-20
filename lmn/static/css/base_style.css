@@ -1,35 +1,9 @@
-body {
-  font-family: monospace;
-  background: #282e2e;
-  color: antiquewhite;
-}
-
-#add-new-show-link {
-  font-size: large;
-  color: violet;
-}
-
-#welcome-user-msg, #login-or-sign-up {
-  position: absolute;
-  right: 0px;
-  padding-right: 10px;
-}
-
-.error {
-  background-color: #b73f08;
-  border-radius: 5px;
-  padding: 2px;
-  margin: 2px;
-}
-
+/* Fonts and Colors */
 body {
   font-family: Arial, Helvetica, sans-serif;
   font-size: 14px;
-}
-
-h2 {
-  text-align: center;
-  margin-top: 50px;
+  background-color: #282e2e;
+  color: antiquewhite;
 }
 
 h2, h3 {
@@ -37,6 +11,7 @@ h2, h3 {
   font-weight: bold;
   letter-spacing: 1px;
   margin-bottom: 30px;
+  text-align: center;
 }
 
 .message {
@@ -59,6 +34,26 @@ h2, h3 {
   background-color: #ffb3b3;
 }
 
+/* Buttons */
+button[type="submit"], #add-new-show-link {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+#add-new-show-link {
+  font-size: large;
+  color: violet;
+}
+
+/* Form */
 form {
   margin: 0 auto;
   width: 300px;
@@ -80,25 +75,21 @@ input[type="text"], input[type="email"], input[type="password"], input[type="sub
   margin-bottom: 20px;
 }
 
-button[type="submit"] {
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  border-radius: 3px;
-  cursor: pointer;
-}
-
-a {
+/* Links */
+a, #clear_search {
   color: #4CAF50;
+  text-decoration: none;
 }
 
-a:hover {
+a:hover, #clear_search:hover {
   text-decoration: underline;
+}
+
+/* Positioning */
+#welcome-user-msg, #login-or-sign-up {
+  position: absolute;
+  right: 0;
+  padding-right: 10px;
 }
 
 #artist-detail-title {
@@ -124,17 +115,6 @@ a:hover {
 
 #artist-list-title {
   margin-top: 40px;
-}
-
-#clear_search {
-  font-size: 14px;
-  margin-left: 16px;
-  color: #999;
-  text-decoration: none;
-}
-
-#clear_search:hover {
-  text-decoration: underline;
 }
 
 .artist {

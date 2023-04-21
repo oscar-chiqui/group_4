@@ -35,6 +35,8 @@ def edit_notes(request, note_pk):
         if form.is_valid():
             form.save()
             return redirect('note_detail', note_pk=note_pk)
+        # if form is not valid
+        # stay on the same page 
     else:
         form = NewNoteForm(instance=note)
     return render(request, 'lmn/notes/note_detail.html', {'note': note })

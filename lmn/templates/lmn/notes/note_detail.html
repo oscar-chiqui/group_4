@@ -21,5 +21,13 @@
       <img src="{% static 'images/instagram.png' %}" alt="Share on Instagram">
       <span>Share this on Instagram</span>
     </a>
+    <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ request.build_absolute_uri }}">
+      <img src="{% static 'images/linkedin.png' %}" alt="Share on LinkedIn">
+      <span>Share this on LinkedIn</span>
+    </a>
+    <a href="https://pinterest.com/pin/create/button/?url={{ request.build_absolute_uri }}&media={{note.show.image.url}}&description={{ note.text }}">
+      <img src="{% static 'images/pinterest.png' %}" alt="Share on Pinterest">
+      <span>Share this on Pinterest</span>
+    </a>
   </div>  
 {% endblock %}

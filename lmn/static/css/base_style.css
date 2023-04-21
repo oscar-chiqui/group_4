@@ -25,3 +25,9 @@ a {
   padding: 2px;
   margin: 2px;
 }
+
+.goodbye-message {
+  color: red;
+  font-weight: bold;
+  float: right;
+}

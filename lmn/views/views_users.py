@@ -26,10 +26,10 @@ def my_user_profile(request):
     # TODO - editable version for logged-in user to edit their own profile
     return redirect('user_profile', user_pk=request.user.pk)
 
-
 @receiver(user_logged_out)
 def on_user_logged_out(sender, request, **kwargs):
-    messages.add_message(request, messages.INFO, 'You have been logged out.')
+    messages.add_message(request, messages.INFO, 'You have been logged out.', extra_tags='goodbye-message')
+
 
 
 def register(request):

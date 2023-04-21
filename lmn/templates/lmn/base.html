@@ -28,7 +28,13 @@
     {% endif %}
 
     <hr>
-
+    {% if messages %}
+    {% for message in messages %}
+      <span{% if message.tags %} class="{{ message.tags }}{% endif %}{% if message.extra_tags %} {{ message.extra_tags }}{% endif %}">{{ message }}</span>
+    {% endfor %}
+  {% endif %}
+  
+  
     {% block content %}
     {% endblock %}
   </body>

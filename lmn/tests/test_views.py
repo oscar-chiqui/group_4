@@ -507,6 +507,7 @@ class TestUserAuthentication(TestCase):
 
 
 class UserLogoutTest(TestCase):
+    
     def setUp(self):
         self.client = Client()
         self.user = User.objects.create_user(

@@ -17,8 +17,8 @@
   <h1 id="user-fullname-profile">Welcome, {{user_profile.first_name}}!</h1>
   <p>username: {{user_profile.username}} | email: {{user_profile.email}} | full name: {{user_profile.first_name}} {{user_profile.last_name}}</p>
 
-  <form method="link" action="{% url 'edit_user_profile' %}">
-    <button>Edit Profile</button>
+  <form method="link" action="{% url 'edit_user_account_info' %}">
+    <button>Edit Account Info</button>
   </form>
 
   {% endif %}

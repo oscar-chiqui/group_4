@@ -26,7 +26,7 @@ def new_note(request, show_pk):
     return render(request, 'lmn/notes/new_note.html', {'form': form, 'show': show})
 
 @login_required
-def edit_notes(request, note_pk):
+def edit_note(request, note_pk):
     """ Edit a particular note about a show """
     note = get_object_or_404(Note, pk=note_pk)
     
@@ -39,7 +39,7 @@ def edit_notes(request, note_pk):
         # stay on the same page 
     else:
         form = NewNoteForm(instance=note)
-    return render(request, 'lmn/notes/note_detail.html', {'note': note })
+    return render(request, 'lmn/notes/edit_note.html', {'form': form })
     
 
 

@@ -43,3 +43,14 @@ def note_detail(request, note_pk):
     """ Display one note. """
     note = get_object_or_404(Note, pk=note_pk)
     return render(request, 'lmn/notes/note_detail.html', {'note': note})
+
+def delete_note(request, note_pk):
+    """ Delete a particular note about a show """
+    note = get_object_or_404(Note, pk=note_pk)
+    
+    if request.method == 'POST':
+        note.delete()
+        return redirect('latest_notes')
+    else:
+        form = NewNoteForm(instance=note)
+        return render(request, 'lmn/notes/edit_note.html', {'form': form})

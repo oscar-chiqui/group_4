@@ -133,3 +133,16 @@ a:hover, #clear_search:hover {
 #artist_list input[type="text"] {
   width: 400px;
 }
+=======
+.error {
+  background-color: #b73f08;
+  border-radius: 5px;
+  padding: 2px;
+  margin: 2px;
+}
+
+.goodbye-message {
+  color: red;
+  font-weight: bold;
+  float: right;
+}

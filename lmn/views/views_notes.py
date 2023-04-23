@@ -52,5 +52,6 @@ def delete_note(request, note_pk):
         note.delete()
         return redirect('latest_notes')
     else:
-        form = NewNoteForm(instance=note)
-        return render(request, 'lmn/notes/edit_note.html', {'form': form})
+        # form = NewNoteForm(instance=note)
+        # return render(request, 'lmn/notes/edit_note.html', {'form': form})
+        return render(request, 'lmn/notes/note_detail.html', {'note': note})

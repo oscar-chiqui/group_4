@@ -31,7 +31,6 @@ def on_user_logged_out(sender, request, **kwargs):
     messages.add_message(request, messages.INFO, 'You have been logged out.', extra_tags='goodbye-message')
 
 
-
 @login_required
 def edit_user_account_info(request):
     """ Handles updating currently logged in user account information.

@@ -36,4 +36,8 @@
     <button type="submit">Update Account Info</button>
   </form>
 
+  <form method="link" action="{% url 'user_profile' user_pk=user.pk %}">
+    <button>Cancel</button>
+  </form>
+
 {% endblock %}

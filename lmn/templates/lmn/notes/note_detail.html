@@ -9,7 +9,7 @@
   <p id="note-title"><b>{{ note.title}}</b></p>
   <p id="note-text">{{ note.text }}</p>
 
-  <form method="POST" action="{% url 'delete_note' %}">
+  <form method="POST" action="{% url 'delete_note' notek_pk=notek_pk %}">
     {% csrf_token %}
     <button type="submit">Delete</button>
   </form>

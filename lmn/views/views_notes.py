@@ -49,9 +49,7 @@ def delete_note(request, note_pk):
     note = get_object_or_404(Note, pk=note_pk)
     
     if request.method == 'POST':
-        note.delete()
+        note.delete() # todo confirming feature if user truly wants to delete the note.
         return redirect('latest_notes')
     else:
-        # form = NewNoteForm(instance=note)
-        # return render(request, 'lmn/notes/edit_note.html', {'form': form})
         return render(request, 'lmn/notes/note_detail.html', {'note': note})

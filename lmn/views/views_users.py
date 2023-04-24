@@ -26,22 +26,27 @@ def my_user_profile(request):
 
 @login_required
 def edit_user_account_info(request):
+    """ Handles updating currently logged in user account information.
+    Can update username, first name, last name, and email. 
+    Redirects to profile page if update is successful. """
+
+    user = User.objects.get(pk=request.user.pk)  # Get currently logged in User
+    form = UserUpdateForm(instance=user)  # Populate new form with User's current information
 
     if request.method == "POST":
-        user = User.objects.get(pk=request.user.pk)
-        form = UserUpdateForm(request.POST, instance=user)
+        # If POST request, populate the form with the newly entered data for the User
+        form = UserUpdateForm(request.POST, instance=user)  
 
         if form.is_valid():
-            form.save()
+            form.save()  # Save the new data to the logged in User object if form is valid
+            # Log success message to template
             messages.success(request, 'Your account information has been successfully updated!')
-            return redirect('user_profile', user_pk=request.user.pk)
+            return redirect('user_profile', user_pk=request.user.pk) # If all is successful, return to profile page
         else:
             messages.add_message(request, messages.INFO, 'Please check the data you entered')
-            # include the invalid form, which will have error messages added to it. 
-            # The error messages will be displayed by the template.
+            # If the form isn't valid, return a message and the form to the edit_user_account_info template
             return render(request, 'lmn/users/edit_user_account_info.html', {'form': form})
 
-    form = UserUpdateForm()
     return render(request, 'lmn/users/edit_user_account_info.html', {'form': form})
     
 

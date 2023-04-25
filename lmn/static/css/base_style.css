@@ -31,3 +31,9 @@ a {
   font-weight: bold;
   float: right;
 }
+
+.success-message {
+  color: green;
+  font-weight: bold;
+  float: right;
+}

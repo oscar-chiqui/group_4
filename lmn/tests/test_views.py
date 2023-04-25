@@ -3,9 +3,6 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib import auth
 from django.contrib.auth import authenticate
-from django.contrib.messages import get_messages
-from django.contrib import messages
-from django.test.client import RequestFactory
 from django.dispatch import Signal
 
 import re

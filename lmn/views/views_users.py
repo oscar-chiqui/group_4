@@ -47,7 +47,7 @@ def edit_user_account_info(request):
         if form.is_valid():
             form.save()  # Save the new data to the logged in User object if form is valid
             # Log success message to template
-            messages.success(request, 'Your account information has been successfully updated!')
+            messages.success(request, 'Your account information has been successfully updated!', extra_tags='success-message' )
             return redirect('user_profile', user_pk=request.user.pk) # If all is successful, return to profile page
         else:
             messages.add_message(request, messages.INFO, 'Please check the data you entered')

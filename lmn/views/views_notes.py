@@ -51,8 +51,27 @@ def delete_note(request, note_pk):
     note = get_object_or_404(Note, pk=note_pk)
     
     if request.method == 'POST':
-        note.delete() # todo confirming feature if user truly wants to delete the note.
-        messages.add_message(request, messages.INFO, 'Your note has been deleted.', extra_tags='note-delete-message')
-        return redirect('latest_notes')
+        if request.user == note.user: # checking if the request was made by the same user who added the note
+            #note.delete() # todo confirming feature if user truly wants to delete the note.
+
+            return redirect('delete_confirmation', note_pk=note.pk)
+        else:
+            return redirect('latest_notes')
+        #return redirect('latest_notes')
     else:
         return render(request, 'lmn/notes/note_detail.html', {'note': note})
+
+
+def delete_confirmation(request, note_pk):
+    """ Asks for confirmation if the user truly wants to delete the note or not """
+    note = get_object_or_404(Note, pk=note_pk)
+    if request.method == 'POST':
+        if request.POST.get('confirm') == 'yes':
+            note.delete()
+            messages.add_message(request, messages.INFO, 'Your note has been deleted.', extra_tags='note-delete-message')
+            return redirect('latest_notes')
+        else:
+            return redirect('note_detail', note_pk=note.pk)
+    
+    return render(request, 'lmn/notes/note_delete_confirmation.html', {'note' : note})
+        

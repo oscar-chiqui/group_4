@@ -61,10 +61,11 @@ def delete_note(request, note_pk):
 def delete_confirmation(request, note_pk):
     """ Asks for confirmation if the user truly wants to delete the note or not """
     note = get_object_or_404(Note, pk=note_pk)
+    
     if request.method == 'POST':
         if request.POST.get('confirm') == 'yes':
             note.delete()
-            messages.add_message(request, messages.INFO, 'Your note has been deleted.', extra_tags='note-delete-message')
+            messages.add_message(request, messages.INFO, 'Your note has been deleted.', extra_tags='note-delete-message') # class for css styling
             return redirect('latest_notes')
         else:
             return redirect('note_detail', note_pk=note.pk)

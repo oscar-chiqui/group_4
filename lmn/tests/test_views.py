@@ -431,6 +431,23 @@ class TestUserProfile(TestCase):
         self.assertNotContains(response, 'email: a@a.com')
         self.assertNotContains(response, 'full name: alice last')
 
+    def user_account_information_successfully_updated(self):
+        logged_in_user = User.objects.get(pk=2)  # Bob
+        self.client.force_login(logged_in_user)
+        users_edit_account_url = self.client.get(reverse('edit_user_account_info', kwargs={'user_pk': 2}))
+        # Change user information 
+        # Bob's initial user information is:
+        # username: 'bob', first_name: 'bob', last_name: 'last', email: 'b@b.com'
+        response = self.client.post(
+            users_edit_account_url, 
+            {'username': 'bobby', 'email': 'bob123@gmail.com', 'first_name': 'Bob', 'last_name': 'Browne'}, 
+            follow=True)
+        # Ensure that user's new information is the same as the post request
+        self.assertEqual(logged_in_user.username, 'bobby')
+        self.assertEqual(logged_in_user.email, 'bob123@gmail.com')
+        self.assertEqual(logged_in_user.first_name, 'Bob')
+        self.assertEqual(logged_in_user.last_name, 'Browne')
+        
 
 class TestNotes(TestCase):
     # Have to add Notes and Users and Show, and also artists and venues because of foreign key constrains in Show

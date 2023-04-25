@@ -423,6 +423,14 @@ class TestUserProfile(TestCase):
         self.assertContains(response, 'email: a@a.com')
         self.assertContains(response, 'full name: alice last')
 
+    def test_user_cannot_see_other_users_account_information(self):  # Ensure that users cannot see other users' account info
+        logged_in_user = User.objects.get(pk=2)
+        self.client.force_login(logged_in_user)
+        response = self.client.get(reverse('user_profile', kwargs={'user_pk': 1}))
+        self.assertNotContains(response, 'username: alice')
+        self.assertNotContains(response, 'email: a@a.com')
+        self.assertNotContains(response, 'full name: alice last')
+
 
 class TestNotes(TestCase):
     # Have to add Notes and Users and Show, and also artists and venues because of foreign key constrains in Show

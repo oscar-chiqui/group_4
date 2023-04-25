@@ -415,6 +415,14 @@ class TestUserProfile(TestCase):
         response = self.client.get(reverse('user_profile', kwargs={'user_pk': 3}))
         self.assertContains(response, 'You are logged in, <a href="/user/profile/2/">bob</a>.')
 
+    def test_user_can_see_account_information(self):  # Ensure that the logged in user sees their own info on their profile
+        logged_in_user = User.objects.get(pk=1)
+        self.client.force_login(logged_in_user)
+        response = self.client.get(reverse('user_profile', kwargs={'user_pk': 1}))
+        self.assertContains(response, 'username: alice')
+        self.assertContains(response, 'email: a@a.com')
+        self.assertContains(response, 'full name: alice last')
+
 
 class TestNotes(TestCase):
     # Have to add Notes and Users and Show, and also artists and venues because of foreign key constrains in Show

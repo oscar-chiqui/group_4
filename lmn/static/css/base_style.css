@@ -26,8 +26,8 @@ a {
   margin: 2px;
 }
 
-.goodbye-message {
+.goodbye-message, .note-delete-message {
   color: red;
   font-weight: bold;
-  float: right;
+  float: right; 
 }

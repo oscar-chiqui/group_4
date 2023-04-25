@@ -2,6 +2,8 @@
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.contrib.messages import get_messages
 
 from ..models import Note, Show
 from ..forms import NewNoteForm 
@@ -50,6 +52,7 @@ def delete_note(request, note_pk):
     
     if request.method == 'POST':
         note.delete() # todo confirming feature if user truly wants to delete the note.
+        messages.add_message(request, messages.INFO, 'Your note has been deleted.', extra_tags='note-delete-message')
         return redirect('latest_notes')
     else:
         return render(request, 'lmn/notes/note_detail.html', {'note': note})

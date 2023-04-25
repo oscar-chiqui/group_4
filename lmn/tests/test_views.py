@@ -293,7 +293,7 @@ class TestVenues(TestCase):
         self.assertTemplateUsed(response, 'lmn/artists/artist_list_for_venue.html')
 
 
-class TestAddNoteUnauthentictedUser(TestCase):
+class TestAddNoteUnauthenticatedUser(TestCase):
     # Have to add artists and venues because of foreign key constrains in show
     fixtures = ['testing_artists', 'testing_venues', 'testing_shows'] 
 

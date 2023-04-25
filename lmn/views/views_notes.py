@@ -51,13 +51,11 @@ def delete_note(request, note_pk):
     note = get_object_or_404(Note, pk=note_pk)
     
     if request.method == 'POST':
-        if request.user == note.user: # checking if the request was made by the same user who added the note
-            #note.delete() # todo confirming feature if user truly wants to delete the note.
-
+        if request.user == note.user: 
             return redirect('delete_confirmation', note_pk=note.pk)
         else:
+            messages.add_message(request, messages.INFO, 'You cannot delete other users note.', extra_tags='note-delete-message')
             return redirect('latest_notes')
-        #return redirect('latest_notes')
     else:
         return render(request, 'lmn/notes/note_detail.html', {'note': note})
 

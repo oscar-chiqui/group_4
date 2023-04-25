@@ -46,16 +46,14 @@ def note_detail(request, note_pk):
     note = get_object_or_404(Note, pk=note_pk)
     return render(request, 'lmn/notes/note_detail.html', {'note': note})
 
+
+@login_required
 def delete_note(request, note_pk):
     """ Delete a particular note about a show """
     note = get_object_or_404(Note, pk=note_pk)
     
     if request.method == 'POST':
-        if request.user == note.user: 
-            return redirect('delete_confirmation', note_pk=note.pk)
-        else:
-            messages.add_message(request, messages.INFO, 'You cannot delete other users note.', extra_tags='note-delete-message')
-            return redirect('latest_notes')
+        return redirect('delete_confirmation', note_pk=note.pk)
     else:
         return render(request, 'lmn/notes/note_detail.html', {'note': note})
 

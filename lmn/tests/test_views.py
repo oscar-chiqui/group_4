@@ -431,6 +431,13 @@ class TestUserProfile(TestCase):
         self.assertNotContains(response, 'email: a@a.com')
         self.assertNotContains(response, 'full name: alice last')
 
+    def test_user_cannot_see_edit_button_on_other_user_profile(self):
+        logged_in_user = User.objects.get(pk=3)  # cat
+        self.client.force_login(logged_in_user)
+        response = self.client.get(reverse('user_profile', kwargs={'user_pk': 1}))  # Alice's profile
+        self.assertNotContains(response, 'Edit Account Info')  # Ensure that user's cannot see button including this text
+
+
     def user_account_information_successfully_updated(self):
         logged_in_user = User.objects.get(pk=2)  # Bob
         self.client.force_login(logged_in_user)

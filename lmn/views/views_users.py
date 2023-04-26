@@ -32,14 +32,17 @@ def on_user_logged_out(sender, request, **kwargs):
 
 
 @login_required
-def edit_user_account_info(request):
+def edit_user_account_info(request, user_pk):
     """ Handles updating currently logged in user account information.
     Can update username, first name, last name, and email. 
     Redirects to profile page if update is successful. """
 
-    user = User.objects.get(pk=request.user.pk)  # Get currently logged in User
+    user = User.objects.get(pk=user_pk)  # Get currently logged in User
     form = UserUpdateForm(instance=user)  # Populate new form with User's current information
 
+    if request.user != user: # Ensure that user is authenticated to update the account
+        return render(request, '403.html')
+    
     if request.method == "POST":
         # If POST request, populate the form with the newly entered data for the User
         form = UserUpdateForm(request.POST, instance=user)  
@@ -48,7 +51,7 @@ def edit_user_account_info(request):
             form.save()  # Save the new data to the logged in User object if form is valid
             # Log success message to template
             messages.success(request, 'Your account information has been successfully updated!', extra_tags='success-message' )
-            return redirect('user_profile', user_pk=request.user.pk) # If all is successful, return to profile page
+            return redirect('user_profile', user_pk) # If all is successful, return to profile page
         else:
             messages.add_message(request, messages.INFO, 'Please check the data you entered')
             # If the form isn't valid, return a message and the form to the edit_user_account_info template

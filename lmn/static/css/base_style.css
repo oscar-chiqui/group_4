@@ -1,11 +1,51 @@
+/* Fonts and Colors */
 body {
-  font-family: monospace;
-  background: #282e2e;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  background-color: #282e2e;
   color: antiquewhite;
 }
 
-a {
-  color: #18eef5;
+h2, h3 {
+  font-size: 24px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.message {
+  padding: 10px;
+  margin-bottom: 20px;
+}
+
+.messages {
+  list-style: none;
+  margin-bottom: 20px;
+}
+
+.messages li {
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 3px;
+}
+
+.messages li.error {
+  background-color: #ffb3b3;
+}
+
+/* Buttons */
+button[type="submit"], #add-new-show-link {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  border-radius: 3px;
+  cursor: pointer;
 }
 
 #add-new-show-link {
@@ -13,12 +53,87 @@ a {
   color: violet;
 }
 
+/* Form */
+form {
+  margin: 0 auto;
+  width: 300px;
+  padding: 20px;
+  border-radius: 3px;
+}
+
+label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+input[type="text"], input[type="email"], input[type="password"], input[type="submit"] {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 3px;
+  margin-bottom: 20px;
+}
+
+/* Links */
+a, #clear_search {
+  color: #4CAF50;
+  text-decoration: none;
+}
+
+a:hover, #clear_search:hover {
+  text-decoration: underline;
+}
+
+/* Positioning */
 #welcome-user-msg, #login-or-sign-up {
   position: absolute;
-  right: 0px;
+  right: 0;
   padding-right: 10px;
 }
 
+#artist-detail-title {
+  margin-top: 100px;
+}
+
+#artist-name {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+#welcome {
+  margin-top: 50px;
+  text-align: center;
+}
+
+#welcome p {
+  font-size: 24px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  margin-bottom: 30px;
+}
+
+#artist-list-title {
+  margin-top: 40px;
+}
+
+.artist {
+  border-bottom: 1px solid #ccc;
+  padding: 16px 0;
+}
+
+.artist p {
+  margin: 0;
+}
+
+.artist a:hover {
+  text-decoration: underline;
+}
+
+#artist_list input[type="text"] {
+  width: 400px;
+}
+=======
 .error {
   background-color: #b73f08;
   border-radius: 5px;

@@ -431,6 +431,12 @@ class TestUserProfile(TestCase):
         self.assertNotContains(response, 'email: a@a.com')
         self.assertNotContains(response, 'full name: alice last')
 
+    def test_user_can_see_own_edit_button_on_profile(self):
+        logged_in_user = User.objects.get(pk=3)  # cat
+        self.client.force_login(logged_in_user)
+        response = self.client.get(reverse('user_profile', kwargs={'user_pk': 3}))  # cat's profile
+        self.assertContains(response, 'Edit Account Info')  # Ensure that user's can see button including this text
+
     def test_user_cannot_see_edit_button_on_other_user_profile(self):
         logged_in_user = User.objects.get(pk=3)  # cat
         self.client.force_login(logged_in_user)
@@ -453,7 +459,7 @@ class TestUserProfile(TestCase):
         self.assertEqual(logged_in_user.email, 'bob123@gmail.com')
         self.assertEqual(logged_in_user.first_name, 'Bob')
         self.assertEqual(logged_in_user.last_name, 'Browne')
-        
+
 
 class TestNotes(TestCase):
     # Have to add Notes and Users and Show, and also artists and venues because of foreign key constrains in Show

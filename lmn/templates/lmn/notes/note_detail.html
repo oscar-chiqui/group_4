@@ -15,10 +15,10 @@
   <p id="note-text">{{ note.text }}</p>
 
   {% if note.user.pk == request.user.pk %}
-  <form method="POST" action="{% url 'delete_note' note_pk=note.pk %}">
-    {% csrf_token %}
-    <button type="submit">Delete</button>
-  </form>
+    <form method="POST" action="{% url 'delete_note' note_pk=note.pk %}">
+      {% csrf_token %}
+      <button type="submit">Delete</button>
+    </form>
   {% endif %}
 
 {% endblock %}

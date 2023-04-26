@@ -14,10 +14,10 @@
   -->
   {% if user_profile.pk == request.user.pk %}
   
-    <h1 id="user-first-name-welcome">Welcome, {{user_profile.first_name}}!</h1>
+    <h1 id="user-first-name-welcome">Welcome, {{request.user.first_name}}!</h1>
     <p>username: {{user_profile.username}} | email: {{user_profile.email}} | full name: {{user_profile.first_name}} {{user_profile.last_name}}</p>
 
-    <form method="link" action="{% url 'edit_user_account_info' %}">
+    <form method="link" action="{% url 'edit_user_account_info' user_pk=request.user.pk %}">
       <button>Edit Account Info</button>
     </form>
 

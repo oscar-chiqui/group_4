@@ -2,6 +2,8 @@
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.contrib.messages import get_messages
 
 from ..models import Note, Show
 from ..forms import NewNoteForm 
@@ -29,19 +31,18 @@ def new_note(request, show_pk):
 def edit_note(request, note_pk):
     """ Edit a particular note about a show """
     note = get_object_or_404(Note, pk=note_pk)
+    form = NewNoteForm(instance=note)
     
     if request.method == 'POST':
         form = NewNoteForm(request.POST, instance=note) # loads the existing note data on the form
+        
         if form.is_valid():
             form.save()
             return redirect('note_detail', note_pk=note_pk)
         else:
-            form = NewNoteForm(instance=note)
-        return redirect('note_detail', note_pk=note_pk)
-            # if form is not valid
-        # stay on the same page 
-    else:
-         return render(request,'lmn/notes/note_detail.html', {'note': note})
+            return redirect('edit_note', note_pk=note_pk)
+            
+    return render(request,'lmn/notes/edit_note.html', {'form': form})
     
 
 

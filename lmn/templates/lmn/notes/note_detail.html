@@ -2,6 +2,12 @@
 
 {% block content %}
 
+  {% if messsages %}
+    {% for message in messages %}
+      <span {% if message.tags %} class="{{ message.tags }}" {% endif %}{% if message.extra_tags %}{{ message.extra_tags }} {% endif %}>{{ message }}</span>
+    {% endfor %}
+  {% endif %}
+
   <h2 id="note-page-title">{{ note.show.artist.name }} at {{ note.show.venue.name }} by 
     <a href="{% url 'user_profile' user_pk=note.user.pk %}">{{ note.user.username }}</a>
   </h2>
@@ -9,8 +15,11 @@
   <p id="note-title"><b>{{ note.title}}</b></p>
   <p id="note-text">{{ note.text }}</p>
 
-  <form method="POST" method="{% url 'edit_note' note_pk=note_pk %}">
-  {% csrf_token %}
-  <button method="submit">Edit</button>
-  </form>
+  {% if note.user.pk == request.user.pk %}
+    <form method="POST" action="{% url 'edit_note' note_pk=note.pk %}">
+      {% csrf_token %}
+      <button type="submit">Edit</button>
+    </form>
+  {% endif %}
+  
 {% endblock %}

@@ -175,3 +175,17 @@ class RegistrationFormTests(TestCase):
             }
             form = UserRegistrationForm(form_data)
             self.assertFalse(form.is_valid())
+
+    def test_register_user_with_numbers_in_first_name_fails(self):
+        form_data = {
+            'username': 'bob', 
+            'email': 'b@b.com', 
+            'first_name': 'bob123', 
+            'last_name': 'whatever', 
+            'password1': 'q!w$er^ty6ui7op', 
+            'password2': 'q!w$er^ty6ui7op'
+        }
+
+        form = UserRegistrationForm(form_data)
+        self.assertFalse(form.is_valid())
+                

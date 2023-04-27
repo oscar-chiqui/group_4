@@ -570,7 +570,21 @@ class TestUserProfile(TestCase):
         
         self.assertContains(response, 'This field is required.')
         self.assertContains(response, 'Please check the data you entered')
-        
+    
+    def test_user_cannot_add_numbers_to_first_name(self):
+        logged_in_user = User.objects.get(pk=2)  # Bob
+        self.client.force_login(logged_in_user)
+
+        edit_account_url = reverse('edit_user_account_info', kwargs={'user_pk': 2}) # Bob's edit account page
+
+        response = self.client.post(
+            edit_account_url,          
+            {'username': 'bob','email': 'b@b.com', 'first_name': 'bob123', 'last_name': 'last'},  # Bob's User data with numbers in the first name
+            follow=True
+        )  
+
+        self.assertContains(response, 'Numeric digits are not allowed.')
+
     def test_edit_account_form_prepopulated_with_user_data(self):
         logged_in_user = User.objects.get(pk=2)  # Bob
         self.client.force_login(logged_in_user)

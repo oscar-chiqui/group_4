@@ -95,3 +95,12 @@ class UserUpdateForm(forms.ModelForm):
         self.fields['first_name'].required = True
         self.fields['last_name'].required = True
         self.fields['email'].required = True
+
+    def clean_username(self):
+        
+        username = self.cleaned_data['username']
+
+        if User.objects.filter(username__iexact=username).exclude(pk=self.instance.pk).exists():
+            raise ValidationError('A user with that username already exists')
+        
+        return username

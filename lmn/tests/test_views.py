@@ -471,7 +471,7 @@ class TestShows(TestCase):
         response = self.client.get(reverse('shows_with_most_notes'))
         self.assertTemplateUsed(response, 'lmn/shows/shows_with_most_notes.html')
     
-    def test_artist_name_displayed_on_page(self):
+    def test_artist_name_displayed_for_show(self):
         # Only one test show, on real site, if there are 10 or more shows, 10 of which have at least one note, there would be 10 artists displayed
         test_top_10_shows = Show(pk=1) 
             
@@ -479,7 +479,7 @@ class TestShows(TestCase):
 
         self.assertContains(response, 'REM')
 
-    def test_venue_name_displayed_on_page(self):
+    def test_venue_name_displayed_for_show(self):
         # Only one test show, on real site, if there are 10 or more shows, 10 of which have at least one note, there would be 10 venues displayed
         test_top_10_shows = Show(pk=1) 
             

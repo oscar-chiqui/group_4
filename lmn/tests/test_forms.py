@@ -247,3 +247,19 @@ class UserUpdateFormTests(TestCase):
 
             form = UserUpdateForm(form_data)
             self.assertFalse(form.is_valid())
+
+    def test_edit_user_with_username_already_in_db_fails(self):
+        # Create a user with username bob
+        bob = User(username='bob', email='bob@bob.com')
+        bob.save()
+
+        # Attempt to edit another user to have same username
+        form_data = {
+            'username': 'bob', 
+            'email': 'another_bob@bob.com', 
+            'first_name': 'bob', 
+            'last_name': 'whatever', 
+        }
+
+        form = UserUpdateForm(form_data)
+        self.assertFalse(form.is_valid())

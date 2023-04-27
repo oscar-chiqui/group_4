@@ -466,14 +466,19 @@ class TestShows(TestCase):
     # Have to add Notes, Users, and Shows, and also artists and venues because of foreign key constrains in Show
     fixtures = ['testing_users', 'testing_artists', 'testing_venues', 'testing_shows', 'testing_notes']
 
-    def setup(self):
-        self.client = Client()
-
     def test_list_shows_most_notes_correct_template_used(self): 
 
         response = self.client.get(reverse('shows_with_most_notes'))
         self.assertTemplateUsed(response, 'lmn/shows/shows_with_most_notes.html')
     
+    def test_artist_name_displayed_on_page(self):
+        # Only one test show, on real site, if there are 10 or more shows, 10 of which have at least one note, there would be 10 artists displayed
+        test_top_10_shows = Show(pk=1) 
+            
+        response = self.client.get(reverse('shows_with_most_notes'), kwargs={'top_10_shows': test_top_10_shows})
+
+        self.assertContains(response, 'REM')
+
 
 class TestUserAuthentication(TestCase):
     """ Some aspects of registration (e.g. missing data, duplicate username) covered in test_forms """

@@ -9,8 +9,10 @@ import re
 import datetime
 from datetime import timezone
 
-from lmn.models import Note, Show
+from lmn.models import Note, Show, Artist, Venue
 from django.contrib.auth.models import User
+
+from django.db.models import Count
 
 
 class TestHomePage(TestCase):
@@ -495,6 +497,31 @@ class TestShows(TestCase):
 
         self.assertContains(response, 'Number of <a href="/notes/for_show/1/">notes</a>: 2') # 'notes' is a link to the notes list about given show
 
+    def test_only_ten_shows_displayed_on_page(self):
+        
+        user = User.objects.get(pk=1)  # Need a user in order to create a Note object
+
+        now = datetime.datetime.today()
+        # Get test artist and venue
+        test_artist = Artist.objects.get(pk=1)
+        test_venue = Venue.objects.get(pk=1)
+        all_shows = [] # Will be 15 shows in this list after for loops
+
+        for i in range(10, 15):  # Using high range to not interfere with fixture primary keys
+            show_no_notes = Show.objects.create(pk=i, show_date=now.date(), artist=test_artist, venue=test_venue)  # Create extra shows that have no notes
+            all_shows.append(show_no_notes)
+
+        for i in range(20, 30): 
+            # Create 10 shows with one note each (these will show up on the top ten shows page, even if they all have the same num of notes)
+            show_with_note = Show.objects.create(pk=i, show_date=now.date(), artist=test_artist, venue=test_venue)
+            Note.objects.create(show=show_with_note, user=user, title='Test Note', text='Test Text', posted_date=now.date())
+            all_shows.append(show_with_note)
+
+        response = self.client.post(reverse('shows_with_most_notes'), shows=all_shows)  # Post to view with all shows
+
+        top_10_shows = response.context['top_10_shows']  # View should return only ten shows, each with at least one note
+
+        self.assertEqual(len(top_10_shows), 10)
 
 class TestUserAuthentication(TestCase):
     """ Some aspects of registration (e.g. missing data, duplicate username) covered in test_forms """

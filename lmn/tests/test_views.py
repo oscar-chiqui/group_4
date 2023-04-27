@@ -467,6 +467,20 @@ class TestUserProfile(TestCase):
         # Assert that the response redirects the user to the login page
         self.assertRedirects(response, '/accounts/login/?next=/user/edit_account_info/3/')
 
+    def test_user_cannot_have_duplicate_email(self):
+        logged_in_user = User.objects.get(pk=2)  # Bob
+        self.client.force_login(logged_in_user)
+
+        edit_account_url = reverse('edit_user_account_info', kwargs={'user_pk': 2}) # Bob's edit account page
+
+        response = self.client.post(
+            edit_account_url,          # Alice's username
+            {'username': 'bobby', 'email': 'a@a.com', 'first_name': 'Bob', 'last_name': 'Browne'}, 
+            follow=True
+        )    
+
+        self.assertContains(response, 'User with this Email address already exists.', status_code=200)
+
 
 class TestNotes(TestCase):
     # Have to add Notes and Users and Show, and also artists and venues because of foreign key constrains in Show

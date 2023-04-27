@@ -540,7 +540,22 @@ class TestUserProfile(TestCase):
         
         self.assertContains(response, 'This field is required.')
         self.assertContains(response, 'Please check the data you entered')
+
+    def test_user_cannot_leave_first_name_blank(self):
+        logged_in_user = User.objects.get(pk=2)  # Bob
+        self.client.force_login(logged_in_user)
+
+        edit_account_url = reverse('edit_user_account_info', kwargs={'user_pk': 2}) # Bob's edit account page
+
+        response = self.client.post(
+            edit_account_url,          
+            {'username': '','email': 'b@b.com', 'first_name': '', 'last_name': 'last'},  # Bob's current information minus first name
+            follow=True
+        )  
         
+        self.assertContains(response, 'This field is required.')
+        self.assertContains(response, 'Please check the data you entered')
+
 
 class TestNotes(TestCase):
     # Have to add Notes and Users and Show, and also artists and venues because of foreign key constrains in Show

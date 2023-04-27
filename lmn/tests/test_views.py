@@ -481,6 +481,24 @@ class TestUserProfile(TestCase):
 
         self.assertContains(response, 'User with this Email address already exists.', status_code=200)
 
+    def test_user_can_click_save_with_current_info_and_not_get_error(self):
+        # Test that a user can go to edit account page and hit save with their own prepopulated
+        # data and not get a message saying that the username or email already exists
+        logged_in_user = User.objects.get(pk=2)  # Bob
+        self.client.force_login(logged_in_user)
+
+        edit_account_url = reverse('edit_user_account_info', kwargs={'user_pk': 2}) # Bob's edit account page
+
+        response = self.client.post(
+            edit_account_url,          
+            {'username': 'bob','email': 'b@b.com', 'first_name': 'bob', 'last_name': 'last'},  # Bob's current information
+            follow=True
+        )  
+
+        # Bob should be able to hit save with the prepopulated information without receiving these messages
+        self.assertNotContains(response, 'User with this Email address already exists.', status_code=200)
+        self.assertNotContains(response, 'A user with that username already exists.', status_code=200)
+
 
 class TestNotes(TestCase):
     # Have to add Notes and Users and Show, and also artists and venues because of foreign key constrains in Show

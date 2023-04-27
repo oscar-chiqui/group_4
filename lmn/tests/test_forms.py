@@ -201,6 +201,7 @@ class RegistrationFormTests(TestCase):
 
         form = UserRegistrationForm(form_data)
         self.assertFalse(form.is_valid())
+    
                 
 class UserUpdateFormTests(TestCase):
 

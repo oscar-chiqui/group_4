@@ -571,6 +571,20 @@ class TestUserProfile(TestCase):
         self.assertContains(response, 'This field is required.')
         self.assertContains(response, 'Please check the data you entered')
         
+    def test_edit_account_form_prepopulated_with_user_data(self):
+        logged_in_user = User.objects.get(pk=2)  # Bob
+        self.client.force_login(logged_in_user)
+
+        edit_account_url = reverse('edit_user_account_info', kwargs={'user_pk': 2}) # Bob's edit account page
+
+        response = self.client.get(edit_account_url)
+
+        # Assert that Bob's account information is populating the form upon visiting the page
+        self.assertContains(response, 'bob')
+        self.assertContains(response, 'bob')
+        self.assertContains(response, 'last')
+        self.assertContains(response, 'b@b.com')
+
 
 class TestNotes(TestCase):
     # Have to add Notes and Users and Show, and also artists and venues because of foreign key constrains in Show

@@ -9,7 +9,7 @@ import re
 import datetime
 from datetime import timezone
 
-from lmn.models import Note
+from lmn.models import Note, Show
 from django.contrib.auth.models import User
 
 
@@ -463,8 +463,11 @@ class TestNotes(TestCase):
 
 
 class TestShows(TestCase):
-    # Have to add Notes and Show, and also artists and venues because of foreign key constrains in Show
-    fixtures = ['testing_artists', 'testing_venues', 'testing_shows', 'testing_notes']
+    # Have to add Notes, Users, and Shows, and also artists and venues because of foreign key constrains in Show
+    fixtures = ['testing_users', 'testing_artists', 'testing_venues', 'testing_shows', 'testing_notes']
+
+    def setup(self):
+        self.client = Client()
 
     def test_list_shows_most_notes_correct_template_used(self): 
 

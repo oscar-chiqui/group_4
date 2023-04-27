@@ -486,6 +486,14 @@ class TestShows(TestCase):
         response = self.client.get(reverse('shows_with_most_notes'), kwargs={'top_10_shows': test_top_10_shows})
 
         self.assertContains(response, 'The Turf Club')
+    
+    def test_note_count_displayed_for_show(self):
+        # Only one test show, on real site, if there are 10 or more shows, 10 of which have at least one note, there would be 10 venues displayed
+        test_top_10_shows = Show(pk=1) 
+            
+        response = self.client.get(reverse('shows_with_most_notes'), kwargs={'top_10_shows': test_top_10_shows})
+
+        self.assertContains(response, 'Number of <a href="/notes/for_show/1/">notes</a>: 2') # 'notes' is a link to the notes list about given show
 
 
 class TestUserAuthentication(TestCase):

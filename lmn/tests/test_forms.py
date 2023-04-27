@@ -1,7 +1,7 @@
 from django.test import TestCase
 
 from django.contrib.auth.models import User
-from lmn.forms import NewNoteForm, UserRegistrationForm
+from lmn.forms import NewNoteForm, UserRegistrationForm, UserUpdateForm
 import string
 
 # Test that forms are validating correctly, and don't accept invalid data
@@ -202,3 +202,15 @@ class RegistrationFormTests(TestCase):
         form = UserRegistrationForm(form_data)
         self.assertFalse(form.is_valid())
                 
+class UserUpdateFormTests(TestCase):
+
+    def test_edit_user_with_valid_data_is_valid(self):
+        form_data = {
+            'username': 'bob', 
+            'email': 'bob@bob.com', 
+            'first_name': 'bob', 
+            'last_name': 'whatever', 
+        }
+
+        form = UserUpdateForm(form_data)
+        self.assertTrue(form.is_valid())

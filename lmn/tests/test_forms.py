@@ -205,6 +205,7 @@ class RegistrationFormTests(TestCase):
 class UserUpdateFormTests(TestCase):
 
     def test_edit_user_with_valid_data_is_valid(self):
+
         form_data = {
             'username': 'bob', 
             'email': 'bob@bob.com', 
@@ -214,3 +215,19 @@ class UserUpdateFormTests(TestCase):
 
         form = UserUpdateForm(form_data)
         self.assertTrue(form.is_valid())
+
+    def test_edit_user_with_missing_data_fails(self):
+
+        form_data = {
+            'username': '', 
+            'email': '', 
+            'first_name': '', 
+            'last_name': '', 
+        }
+
+        # Remove one key-value pair from a copy of the dictionary, assert form not valid
+        for field in form_data.keys():
+            copy_of_form_data = dict(form_data)
+            del(copy_of_form_data[field])
+            form = UserUpdateForm(copy_of_form_data)
+            self.assertFalse(form.is_valid())

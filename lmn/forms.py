@@ -22,6 +22,10 @@ class NewNoteForm(forms.ModelForm):
 
 
 class UserRegistrationForm(UserCreationForm):
+    # Do not allow numeric values in first and last names.
+    # Source: https://techflow360.com/how-to-perform-django-form-validation-with-regex/
+    first_name = forms.CharField(validators=[RegexValidator(r'^[^\d]*$', 'Numeric digits are not allowed.')])
+    last_name = forms.CharField(validators=[RegexValidator(r'^[^\d]*$', 'Numeric digits are not allowed.')])
 
     class Meta:
         model = User

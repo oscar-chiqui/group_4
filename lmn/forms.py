@@ -112,3 +112,13 @@ class UserUpdateForm(forms.ModelForm):
             raise ValidationError('A user with that email address already exists')
 
         return email
+    
+    def save(self, commit=True):
+        user = super(UserUpdateForm, self).save(commit=False)
+        user.username = self.cleaned_data['username']
+        user.email = self.cleaned_data['email']
+
+        if commit:
+            user.save()
+
+        return user

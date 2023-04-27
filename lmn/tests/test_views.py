@@ -459,6 +459,18 @@ class TestUserProfile(TestCase):
         self.assertEqual(updated_user.first_name, 'Bob')
         self.assertEqual(updated_user.last_name, 'Browne')
 
+    def test_user_cannot_edit_other_user_account_info(self):
+        logged_in_user = User.objects.get(pk=2)  # Bob
+        self.client.force_login(logged_in_user)
+        edit_account_url = reverse('edit_user_account_info', kwargs={'user_pk': 1})  # Alice
+
+        response = self.client.get(edit_account_url)
+
+        # Assert that user is redirected to the 403 template when they try to access the URL
+        # of another user's account edit page
+        self.assertTemplateUsed(response, '403.html')
+        self.assertTemplateUsed(response, 'lmn/base.html')
+
     def test_request_is_made_to_own_user_account_info_not_logged_in(self):
         edit_account_url = reverse('edit_user_account_info', kwargs={'user_pk': 3})
 
@@ -499,6 +511,21 @@ class TestUserProfile(TestCase):
         self.assertNotContains(response, 'User with this Email address already exists.', status_code=200)
         self.assertNotContains(response, 'A user with that username already exists.', status_code=200)
 
+    def test_user_cannot_leave_username_blank(self):
+        logged_in_user = User.objects.get(pk=2)  # Bob
+        self.client.force_login(logged_in_user)
+
+        edit_account_url = reverse('edit_user_account_info', kwargs={'user_pk': 2}) # Bob's edit account page
+
+        response = self.client.post(
+            edit_account_url,          
+            {'username': '','email': 'b@b.com', 'first_name': 'bob', 'last_name': 'last'},  # Bob's current information minus username
+            follow=True
+        )  
+        
+        self.assertContains(response, 'This field is required.')
+        self.assertContains(response, 'Please check the data you entered')
+        
 
 class TestNotes(TestCase):
     # Have to add Notes and Users and Show, and also artists and venues because of foreign key constrains in Show

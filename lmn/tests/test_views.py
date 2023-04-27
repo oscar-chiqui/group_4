@@ -37,6 +37,10 @@ class TestEmptyViews(TestCase):
         response = self.client.get(reverse('latest_notes'))
         self.assertFalse(response.context['notes'])  # An empty list is false
 
+    def test_with_no_shows_returns_empty_list(self):
+        response = self.client.get(reverse('shows_with_most_notes'))
+        self.assertFalse(response.context['top_10_shows'])  # An empty list is false
+
 
 class TestArtistViews(TestCase):
 

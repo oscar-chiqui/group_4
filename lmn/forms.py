@@ -104,3 +104,11 @@ class UserUpdateForm(forms.ModelForm):
             raise ValidationError('A user with that username already exists')
         
         return username
+    
+    def clean_email(self):
+        email = self.cleaned_data['email']
+
+        if User.objects.filter(email__iexact=email).exclude(pk=self.instance.pk).exists():
+            raise ValidationError('A user with that email address already exists')
+
+        return email

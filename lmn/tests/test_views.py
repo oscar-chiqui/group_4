@@ -479,6 +479,14 @@ class TestShows(TestCase):
 
         self.assertContains(response, 'REM')
 
+    def test_venue_name_displayed_on_page(self):
+        # Only one test show, on real site, if there are 10 or more shows, 10 of which have at least one note, there would be 10 venues displayed
+        test_top_10_shows = Show(pk=1) 
+            
+        response = self.client.get(reverse('shows_with_most_notes'), kwargs={'top_10_shows': test_top_10_shows})
+
+        self.assertContains(response, 'The Turf Club')
+
 
 class TestUserAuthentication(TestCase):
     """ Some aspects of registration (e.g. missing data, duplicate username) covered in test_forms """

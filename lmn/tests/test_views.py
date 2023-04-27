@@ -464,7 +464,7 @@ class TestNotes(TestCase):
         self.assertTemplateUsed(response, 'lmn/notes/new_note.html')
 
 
-class TestShows(TestCase):
+class TestShowsWithMostNotesPage(TestCase):
     # Have to add Notes, Users, and Shows, and also artists and venues because of foreign key constrains in Show
     fixtures = ['testing_users', 'testing_artists', 'testing_venues', 'testing_shows', 'testing_notes']
 

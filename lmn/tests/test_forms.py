@@ -313,3 +313,15 @@ class UserUpdateFormTests(TestCase):
 
         form = UserRegistrationForm(form_data)
         self.assertFalse(form.is_valid())
+
+    def test_edit_user_with_numbers_in_last_name_fails(self):
+        form_data = {
+            'username': 'bob', 
+            'email': 'b@b.com', 
+            'first_name': 'bob', 
+            'last_name': 'whatever123', 
+        }
+
+        form = UserRegistrationForm(form_data)
+        self.assertFalse(form.is_valid())
+        

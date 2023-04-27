@@ -491,7 +491,7 @@ class TestUserProfile(TestCase):
             follow=True
         )    
 
-        self.assertContains(response, 'User with this Email address already exists.', status_code=200)
+        self.assertContains(response, 'A user with that email address already exists', status_code=200)
 
     def test_user_can_click_save_with_current_info_and_not_get_error(self):
         # Test that a user can go to edit account page and hit save with their own prepopulated

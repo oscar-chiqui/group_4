@@ -459,6 +459,14 @@ class TestUserProfile(TestCase):
         self.assertEqual(updated_user.first_name, 'Bob')
         self.assertEqual(updated_user.last_name, 'Browne')
 
+    def test_request_is_made_to_own_user_account_info_not_logged_in(self):
+        edit_account_url = reverse('edit_user_account_info', kwargs={'user_pk': 3})
+
+        response = self.client.get(edit_account_url)  # Attempt to edit an account
+        
+        # Assert that the response redirects the user to the login page
+        self.assertRedirects(response, '/accounts/login/?next=/user/edit_account_info/3/')
+
 
 class TestNotes(TestCase):
     # Have to add Notes and Users and Show, and also artists and venues because of foreign key constrains in Show

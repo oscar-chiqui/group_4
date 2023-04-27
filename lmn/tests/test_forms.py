@@ -282,3 +282,22 @@ class UserUpdateFormTests(TestCase):
 
             form = UserUpdateForm(form_data)
             self.assertFalse(form.is_valid())
+
+    def test_edit_user_with_email_already_in_db_case_insensitive_fails(self):
+        # Create a user with username bob
+        bob = User(username='bob', email='bob@bob.com')
+        bob.save()
+
+        invalid_email = ['BOB@bOb.com', 'BOb@bob.cOm', 'Bob@bob.coM', 'BOB@BOB.COM', 'bOb@bob.com', 'boB@bob.com']
+
+        for invalid in invalid_email:
+            # Attempt to edit another user to have same username
+            form_data = {
+                'username': 'another_bob', 
+                'email': invalid, 
+                'first_name': 'bob', 
+                'last_name': 'whatever', 
+            }
+
+            form = UserUpdateForm(form_data)
+            self.assertFalse(form.is_valid())

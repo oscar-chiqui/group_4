@@ -100,16 +100,16 @@ class UserUpdateForm(forms.ModelForm):
         
         username = self.cleaned_data['username']
 
-        if User.objects.filter(username__iexact=username).exclude(pk=self.instance.pk).exists():
-            raise ValidationError('A user with that username already exists')
+        if User.objects.filter(username__iexact=username).exclude(pk=self.instance.pk).exists(): # Make sure username doesn't exist in DB already, case-insensitive
+            raise ValidationError('A user with that username already exists')                    # Excludes logged in user's current username
         
         return username
     
     def clean_email(self):
         email = self.cleaned_data['email']
 
-        if User.objects.filter(email__iexact=email).exclude(pk=self.instance.pk).exists():
-            raise ValidationError('A user with that email address already exists')
+        if User.objects.filter(email__iexact=email).exclude(pk=self.instance.pk).exists():  # Make sure email doesn't exist in DB already, case-insensitive
+            raise ValidationError('A user with that email address already exists')          # Excludes logged in user's current email
 
         return email
     

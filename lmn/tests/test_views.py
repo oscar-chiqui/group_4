@@ -424,7 +424,7 @@ class TestUserProfile(TestCase):
 
 class TestNotes(TestCase):
     # Have to add Notes and Users and Show, and also artists and venues because of foreign key constrains in Show
-    fixtures = ['testing_users', 'testing_artists', 'testing_venues', 'testing_shows', 'testing_notes'] 
+    fixtures = ['testing_users', 'testing_artists', 'testing_venues', 'testing_shows_most_notes', 'testing_notes'] 
 
     def test_latest_notes(self):
         response = self.client.get(reverse('latest_notes'))

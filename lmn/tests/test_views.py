@@ -496,30 +496,13 @@ class TestShowsWithMostNotesPage(TestCase):
         self.assertContains(response, 'Number of <a href="/notes/for_show/1/">notes</a>: 2') # 'notes' is a link to the notes list about given show
 
     def test_only_shows_with_notes_displayed_on_page(self):
-        user = User.objects.get(pk=1)  # Need a user in order to create a Note object
-        now = datetime.datetime.today()
+        all_shows = Show.objects.all()  # Contains 5 shows, 4 have notes, 1 does not
 
-        # Get test artist and venue
-        test_artist = Artist.objects.get(pk=1)
-        test_venue = Venue.objects.get(pk=1)
-        all_shows = [] # Will be 8 shows in this list after for loops
+        response = self.client.post(reverse('shows_with_most_notes'), shows=all_shows)  # Post to view with all shows from fixture
+        top_5_shows = response.context['top_5_shows']  # View should return only 4 shows, each with at least one note
 
-        for i in range(4, 9):  # Using high range to not interfere with fixture primary keys
-            show_no_notes = Show.objects.create(pk=i, show_date=now.date(), artist=test_artist, venue=test_venue)  # Create 5 extra shows that have no notes
-            all_shows.append(show_no_notes)
+        self.assertEqual(len(top_5_shows), 4)  # Extra show with no notes should not be added to page
 
-        for i in range(10, 13): 
-            # Create 3 shows with one note each (these will show up on the top ten shows page, even if they all have the same num of notes)
-            # There are already 2 shows in the fixtures that have notes
-            show_with_note = Show.objects.create(pk=i, show_date=now.date(), artist=test_artist, venue=test_venue)
-            Note.objects.create(show=show_with_note, user=user, title='Test Note', text='Test Text', posted_date=now.date())
-            all_shows.append(show_with_note)
-
-        response = self.client.post(reverse('shows_with_most_notes'), shows=all_shows)  # Post to view with all shows
-        top_10_shows = response.context['top_10_shows']  # View should return only 5 shows, each with at least one note
-
-        self.assertEqual(len(top_10_shows), 5)  # Extra shows with no notes should not be added to page
-    
     def test_only_10_shows_with_notes_displayed_on_page(self):
         # Make sure that even if there are ten shows with the same number of notes, only 10 are displayed on page
         user = User.objects.get(pk=1)  # Need a user in order to create a Note object

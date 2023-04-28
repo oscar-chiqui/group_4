@@ -516,11 +516,12 @@ class TestShowsWithMostNotesPage(TestCase):
             show_with_note = Show.objects.create(pk=i, show_date=now.date(), artist=test_artist, venue=test_venue)
             Note.objects.create(show=show_with_note, user=user, title='Test Note', text='Test Text', posted_date=now.date())
             all_shows.append(show_with_note)
-        print(len(all_shows))
+            
         response = self.client.post(reverse('shows_with_most_notes'), shows=all_shows)  # Post to view with all shows
         top_10_shows = response.context['top_10_shows']  # View should return only 5 shows, each with at least one note
 
         self.assertEqual(len(top_10_shows), 5)  # Extra shows with no notes should not be added to page
+
 
 class TestUserAuthentication(TestCase):
     """ Some aspects of registration (e.g. missing data, duplicate username) covered in test_forms """

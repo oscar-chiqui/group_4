@@ -544,6 +544,15 @@ class TestShowsWithMostNotesPage(TestCase):
 
         self.assertEqual(len(top_10_shows), 10)  # There are 11 shows with notes passed into the view. Only 10 should be displayed
 
+    def test_shows_with_most_notes_ordered_by_num_notes_desc(self):
+        # Make sure that shows are displayed from top to bottom by highest number of notes
+        shows_with_different_num_notes = [Show(pk=2), Show(pk=1)]  # Initial list contains two shows, first in the list has 1 note, second has 2
+
+        response = self.client.post(reverse('shows_with_most_notes'), shows=shows_with_different_num_notes)  # Post to view with all shows
+        top_10_shows = response.context['top_10_shows']  # View should return the show with pk=1 (with 2 notes) at beginning of list
+        
+        self.assertEqual(top_10_shows[0].pk, 1)  # Assert that the view returns the show with pk=1 at the top of the list
+                         
 
 class TestUserAuthentication(TestCase):
     """ Some aspects of registration (e.g. missing data, duplicate username) covered in test_forms """

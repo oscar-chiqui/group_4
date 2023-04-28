@@ -29,7 +29,7 @@ def new_note(request, show_pk):
 
 @login_required
 def edit_note(request, note_pk):
-    """ Edit a particular note about a show """
+    """ Edit a particular note about a show. A user can only edit a note created by the user and not the note created by other users.  """
     note = get_object_or_404(Note, pk=note_pk)
     form = NewNoteForm(instance=note)
     

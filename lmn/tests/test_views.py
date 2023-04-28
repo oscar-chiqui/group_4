@@ -9,7 +9,7 @@ import re
 import datetime
 from datetime import timezone
 
-from lmn.models import Note, Show, Artist, Venue
+from lmn.models import Note, Show
 from django.contrib.auth.models import User
 
 

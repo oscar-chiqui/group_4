@@ -166,3 +166,9 @@ a:hover, #clear_search:hover {
   font-weight: bold;
   float: right;
 }
+
+.success-message {
+  color: green;
+  font-weight: bold;
+  float: right;
+}

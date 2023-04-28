@@ -505,12 +505,15 @@ class TestShowsWithMostNotesPage(TestCase):
 
     def test_shows_with_most_notes_ordered_by_num_notes_desc(self):
         # Make sure that shows are displayed from top to bottom by highest number of notes
-        shows_with_different_num_notes = [Show(pk=2), Show(pk=1)]  # Initial list contains two shows, first in the list has 1 note, second has 2
+        shows_with_different_num_notes = Show.objects.all()
 
         response = self.client.post(reverse('shows_with_most_notes'), shows=shows_with_different_num_notes)  # Post to view with all shows
-        top_10_shows = response.context['top_10_shows']  # View should return the show with pk=1 (with 2 notes) at beginning of list
+        top_5_shows = response.context['top_5_shows']  # View should return the show with pk=1 (with 4 notes) at beginning of list, and so on
         
-        self.assertEqual(top_10_shows[0].pk, 1)  # Assert that the view returns the show with pk=1 at the top of the list
+        self.assertEqual(top_5_shows[0].pk, 1)  # Assert that the view returns the show with pk=1 at the top of the list
+        self.assertEqual(top_5_shows[1].pk, 2)  # Show with pk=2 should be next, and so on
+        self.assertEqual(top_5_shows[2].pk, 4)  
+        self.assertEqual(top_5_shows[3].pk, 3)  
                          
 
 class TestUserAuthentication(TestCase):

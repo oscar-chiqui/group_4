@@ -44,7 +44,6 @@ class TestShow(TestCase):
         
         self.assertEqual(test_show.note_count, 4)  # Note count should go back down to 4 if one note is deleted
 
-
     def test_shows_have_correct_note_count_no_notes(self):
         test_show = Show.objects.get(pk=5)
 
@@ -66,3 +65,4 @@ class TestShow(TestCase):
             Note.objects.create(show=test_show, user=test_user, title=title, text=text, posted_date=posted_date) 
 
         self.assertEqual(test_show.note_count, 100)
+        

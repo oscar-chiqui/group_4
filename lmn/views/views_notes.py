@@ -49,7 +49,7 @@ def note_detail(request, note_pk):
 
 @login_required
 def delete_note(request, note_pk):
-    """ Delete a particular note about a show """
+    """ Delete a particular note about a show. A user can only delete a note created by the user, not the note created by other user. """
     note = get_object_or_404(Note, pk=note_pk)
     
     if request.method == 'POST':

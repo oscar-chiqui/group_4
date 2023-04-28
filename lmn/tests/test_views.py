@@ -489,11 +489,11 @@ class TestShowsWithMostNotesPage(TestCase):
     
     def test_note_count_displayed_for_show(self):
         # Only one test show, on real site, if there are 10 or more shows, 10 of which have at least one note, there would be 10 venues displayed
-        test_top_10_shows = Show(pk=1) 
+        test_show = Show(pk=1) 
             
-        response = self.client.get(reverse('shows_with_most_notes'), kwargs={'top_10_shows': test_top_10_shows})
+        response = self.client.get(reverse('shows_with_most_notes'), kwargs={'top_5_shows': test_show})
 
-        self.assertContains(response, 'Number of <a href="/notes/for_show/1/">notes</a>: 2') # 'notes' is a link to the notes list about given show
+        self.assertContains(response, 'Number of <a href="/notes/for_show/1/">notes</a>: 4') # 'notes' is a link to the notes list about given show
 
     def test_only_shows_with_notes_displayed_on_page(self):
         all_shows = Show.objects.all()  # Contains 5 shows, 4 have notes, 1 does not

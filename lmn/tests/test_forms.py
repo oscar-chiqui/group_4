@@ -1,7 +1,7 @@
 from django.test import TestCase
 
 from django.contrib.auth.models import User
-from lmn.forms import NewNoteForm, UserRegistrationForm
+from lmn.forms import NewNoteForm, UserRegistrationForm, UserUpdateForm
 import string
 
 # Test that forms are validating correctly, and don't accept invalid data
@@ -175,3 +175,154 @@ class RegistrationFormTests(TestCase):
             }
             form = UserRegistrationForm(form_data)
             self.assertFalse(form.is_valid())
+
+    def test_register_user_with_numbers_in_first_name_fails(self):
+        form_data = {
+            'username': 'bob', 
+            'email': 'b@b.com', 
+            'first_name': 'bob123', 
+            'last_name': 'whatever', 
+            'password1': 'q!w$er^ty6ui7op', 
+            'password2': 'q!w$er^ty6ui7op'
+        }
+
+        form = UserRegistrationForm(form_data)
+        self.assertFalse(form.is_valid())
+
+    def test_register_user_with_numbers_in_last_name_fails(self):
+        form_data = {
+            'username': 'bob', 
+            'email': 'b@b.com', 
+            'first_name': 'bob', 
+            'last_name': 'whatever123', 
+            'password1': 'q!w$er^ty6ui7op', 
+            'password2': 'q!w$er^ty6ui7op'
+        }
+
+        form = UserRegistrationForm(form_data)
+        self.assertFalse(form.is_valid())
+    
+                
+class UserUpdateFormTests(TestCase):
+
+    def test_edit_user_with_valid_data_is_valid(self):
+
+        form_data = {
+            'username': 'bob', 
+            'email': 'bob@bob.com', 
+            'first_name': 'bob', 
+            'last_name': 'whatever', 
+        }
+
+        form = UserUpdateForm(form_data)
+        self.assertTrue(form.is_valid())
+
+    def test_edit_user_with_missing_data_fails(self):
+
+        form_data = {
+            'username': '', 
+            'email': '', 
+            'first_name': '', 
+            'last_name': '', 
+        }
+
+        # Remove one key-value pair from a copy of the dictionary, assert form not valid
+        for field in form_data.keys():
+            copy_of_form_data = dict(form_data)
+            del(copy_of_form_data[field])
+            form = UserUpdateForm(copy_of_form_data)
+            self.assertFalse(form.is_valid())
+
+    def test_edit_user_with_email_already_in_db_fails(self):
+            # Create a user with email bob@bob.com
+            bob = User(username='bob', email='bob@bob.com', first_name='bob', last_name='bob')
+            bob.save()
+
+            # Attempt to edit another user to have same email
+            form_data = {
+                'username': 'another_bob', 
+                'email': 'bob@bob.com', 
+                'first_name': 'bob', 
+                'last_name': 'whatever', 
+            }
+
+            form = UserUpdateForm(form_data)
+            self.assertFalse(form.is_valid())
+
+    def test_edit_user_with_username_already_in_db_fails(self):
+        # Create a user with username bob
+        bob = User(username='bob', email='bob@bob.com')
+        bob.save()
+
+        # Attempt to edit another user to have same username
+        form_data = {
+            'username': 'bob', 
+            'email': 'another_bob@bob.com', 
+            'first_name': 'bob', 
+            'last_name': 'whatever', 
+        }
+
+        form = UserUpdateForm(form_data)
+        self.assertFalse(form.is_valid())
+
+    def test_edit_user_with_username_already_in_db_case_insensitive_fails(self):
+        # Create a user with username bob
+        bob = User(username='bob', email='bob@bob.com')
+        bob.save()
+
+        invalid_username = ['BOB', 'BOb', 'Bob', 'bOB', 'bOb', 'boB']
+
+        for invalid in invalid_username:
+            # Attempt to edit another user to have same username
+            form_data = {
+                'username': invalid, 
+                'email': 'another_bob@bob.com', 
+                'first_name': 'bob', 
+                'last_name': 'whatever', 
+            }
+
+            form = UserUpdateForm(form_data)
+            self.assertFalse(form.is_valid())
+
+    def test_edit_user_with_email_already_in_db_case_insensitive_fails(self):
+        # Create a user with username bob
+        bob = User(username='bob', email='bob@bob.com')
+        bob.save()
+
+        invalid_email = ['BOB@bOb.com', 'BOb@bob.cOm', 'Bob@bob.coM', 'BOB@BOB.COM', 'bOb@bob.com', 'boB@bob.com']
+
+        for invalid in invalid_email:
+            # Attempt to edit another user to have same username
+            form_data = {
+                'username': 'another_bob', 
+                'email': invalid, 
+                'first_name': 'bob', 
+                'last_name': 'whatever', 
+            }
+
+            form = UserUpdateForm(form_data)
+            self.assertFalse(form.is_valid())
+
+    def test_edit_user_with_numbers_in_first_name_fails(self):
+
+        form_data = {
+            'username': 'bob', 
+            'email': 'b@b.com', 
+            'first_name': 'bob123', 
+            'last_name': 'whatever', 
+        }
+
+        form = UserRegistrationForm(form_data)
+        self.assertFalse(form.is_valid())
+
+    def test_edit_user_with_numbers_in_last_name_fails(self):
+        form_data = {
+            'username': 'bob', 
+            'email': 'b@b.com', 
+            'first_name': 'bob', 
+            'last_name': 'whatever123', 
+        }
+
+        form = UserRegistrationForm(form_data)
+        self.assertFalse(form.is_valid())
+        

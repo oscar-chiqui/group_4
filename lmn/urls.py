@@ -30,6 +30,7 @@ urlpatterns = [
     # User related URLs
     path('user/profile/<int:user_pk>/', views_users.user_profile, name='user_profile'),
     path('user/profile/', views_users.my_user_profile, name='my_user_profile'),
+    path('user/edit_account_info/<int:user_pk>/', views_users.edit_user_account_info, name='edit_user_account_info'),
 
     # Account related URLs
     path('accounts/login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),

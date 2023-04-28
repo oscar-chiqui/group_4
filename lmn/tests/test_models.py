@@ -49,3 +49,15 @@ class TestShow(TestCase):
         test_show = Show.objects.get(pk=5)
 
         self.assertEqual(test_show.note_count, 0)
+
+    def test_shows_have_correct_note_count_lots_of_notes(self):
+        test_show = Show.objects.get(pk=5)
+        test_user = User.objects.get(pk=1)
+        title = 'Test'
+        text = 'Test text'
+        posted_date = '2017-02-12T19:30:00-00:00'
+
+        for i in range(100):
+            Note.objects.create(show=test_show, user=test_user, title=title, text=text, posted_date=posted_date) 
+
+        self.assertEqual(test_show.note_count, 100)

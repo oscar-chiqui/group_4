@@ -50,6 +50,11 @@ class TestShow(TestCase):
 
         self.assertEqual(test_show.note_count, 0)
 
+    def test_shows_have_correct_note_count_1_note(self):
+        test_show = Show.objects.get(pk=3)
+
+        self.assertEqual(test_show.note_count, 1)
+
     def test_shows_have_correct_note_count_lots_of_notes(self):
         test_show = Show.objects.get(pk=5)
         test_user = User.objects.get(pk=1)

@@ -2,9 +2,9 @@
 
 {% block content %}
 
-  <h1>Top {{ top_10_shows|length }} shows with the most notes</h1>
+  <h1>Top {{ top_5_shows|length }} shows with the most notes</h1>
 
-  {% for show in top_10_shows %}
+  {% for show in top_5_shows %}
 
     <div id="shows-with-most-notes-title">
       <h4>

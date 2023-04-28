@@ -422,7 +422,7 @@ class TestUserProfile(TestCase):
 
 class TestNotes(TestCase):
     # Have to add Notes and Users and Show, and also artists and venues because of foreign key constrains in Show
-    fixtures = ['testing_users', 'testing_artists', 'testing_venues', 'testing_shows_most_notes', 'testing_notes_for_top_shows'] 
+    fixtures = ['testing_users', 'testing_artists', 'testing_venues', 'testing_shows', 'testing_notes'] 
 
     def test_latest_notes(self):
         response = self.client.get(reverse('latest_notes'))
@@ -464,7 +464,7 @@ class TestNotes(TestCase):
 
 class TestShowsWithMostNotesPage(TestCase):
     # Have to add Notes, Users, and Shows, and also artists and venues because of foreign key constrains in Show
-    fixtures = ['testing_users', 'testing_artists', 'testing_venues', 'testing_shows', 'testing_notes']
+    fixtures = ['testing_users', 'testing_artists', 'testing_venues', 'testing_shows_most_notes', 'testing_notes_for_top_shows']
 
     def test_list_shows_most_notes_correct_template_used(self): 
 

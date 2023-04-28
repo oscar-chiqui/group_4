@@ -515,6 +515,16 @@ class TestShowsWithMostNotesPage(TestCase):
         self.assertEqual(top_5_shows[2].pk, 4)  
         self.assertEqual(top_5_shows[3].pk, 3)  
                          
+    def test_header_displays_correct_number_for_num_top_shows(self):
+        # Make sure that the number displayed at the top of the page 'Top {num shows} shows with the most notes'
+        # For how many shows are displayed 
+
+        all_shows = Show.objects.all() 
+
+        response = self.client.post(reverse('shows_with_most_notes'), shows=all_shows)  # Post to view with all shows from fixture
+
+        self.assertContains(response, 'Top 4 shows with the most notes')  # Assert that response contains the correct number displayed
+
 
 class TestUserAuthentication(TestCase):
     """ Some aspects of registration (e.g. missing data, duplicate username) covered in test_forms """

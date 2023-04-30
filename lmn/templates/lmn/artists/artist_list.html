@@ -26,7 +26,8 @@
         <p>
           <a href="{% url 'artist_detail' artist_pk=artist.pk %}">{{ artist.name }}</a>
         </p>
-        <p class="artist-notes"><a href="{% url 'venues_for_artist' artist_pk=artist.pk %}"> See venues played, notes, and add your own {{ artist.name }} notes</a>
+        <p class="artist-notes">
+          <a href="{% url 'venues_for_artist' artist_pk=artist.pk %}"> See venues played, notes, and add your own {{ artist.name }} notes</a>
         </p>
       </div>
     {% empty %}

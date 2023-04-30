@@ -1,5 +1,5 @@
 {% extends 'lmn/base.html' %}
-
+{% load static %}
 {% block content %}
 
   <!-- A user's profile page.
@@ -13,15 +13,17 @@
 
   -->
   {% if user_profile.pk == request.user.pk %}
-  
+  <div class="user-info">
     <h1 id="user-first-name-welcome">Welcome, {{request.user.first_name}}!</h1>
-    <p>username: {{user_profile.username}} | email: {{user_profile.email}} | full name: {{user_profile.first_name}} {{user_profile.last_name}}</p>
+    <p>Username: {{user_profile.username}}</p>
+    <p>Email: {{user_profile.email}}</p>
+    <p>Full Name: {{user_profile.first_name}} {{user_profile.last_name}}</p>
 
-    <form method="link" action="{% url 'edit_user_account_info' user_pk=request.user.pk %}">
-      <button>Edit Account Info</button>
+    <form class="edit-profile" method="link" action="{% url 'edit_user_account_info' user_pk=request.user.pk %}">
+      <button class="edit-btn">Edit Account Info</button>
     </form>
-
-  {% endif %}
+  </div>
+{% endif %}
 
   <h2 id="username-notes">{{ user_profile.username }}'s notes</h2>
 

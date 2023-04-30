@@ -1,16 +1,16 @@
 {% extends 'lmn/base.html' %}
-
+{% load static %}
 {% block content %}
 
   <h1>Artist List</h1>
 
-  <h2>Artist Search</h2>
-
-  <form action="{% url 'artist_list' %}">
-    {{ form }}
-    <button type="submit">Search</button>
-  </form>
-
+  <div class="artist-search">
+    <h2>Artist Search</h2>
+    <form action="{% url 'artist_list' %}">
+      {{ form }}
+      <button type="submit">Search</button>
+    </form>
+  </div>
 
   {% if search_term %}
     <h2 id="artist-list-title">Artists matching '{{ search_term }}' 
@@ -20,23 +20,18 @@
     <h2 id="artist-list-title">All artists</h2>
   {% endif %}
 
-
-  {% for artist in artists %}
-  
-    <div class="artist" id="artist_{{ artist.pk }}">
-      <p>
-        <a href="{% url 'artist_detail' artist_pk=artist.pk %}">{{ artist.name }}</a>
-      </p>
-      
-      <p>See venues played, notes, and add your own 
-        <a href="{% url 'venues_for_artist' artist_pk=artist.pk %}">{{ artist.name }} notes</a>
-      </p>
-    </div>
-
-  {% empty %}
-    
-    <p>No artists found</p>
-
-  {% endfor %}
+  <div class="artist-list">
+    {% for artist in artists %}
+      <div class="artist" id="artist_{{ artist.pk }}">
+        <p>
+          <a href="{% url 'artist_detail' artist_pk=artist.pk %}">{{ artist.name }}</a>
+        </p>
+        <p class="artist-notes"><a href="{% url 'venues_for_artist' artist_pk=artist.pk %}"> See venues played, notes, and add your own {{ artist.name }} notes</a>
+        </p>
+      </div>
+    {% empty %}
+      <p>No artists found</p>
+    {% endfor %}
+  </div>
 
 {% endblock %}

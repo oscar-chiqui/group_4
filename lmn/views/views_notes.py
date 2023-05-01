@@ -64,9 +64,12 @@ def delete_confirmation(request, note_pk):
     
     if request.method == 'POST':
         if request.POST.get('confirm') == 'yes':
-            note.delete()
-            messages.add_message(request, messages.INFO, 'Your note has been deleted.', extra_tags='note-delete-message') # class for css styling
-            return redirect('latest_notes')
+            if request.user.pk == note.user.pk:
+                note.delete()
+                messages.add_message(request, messages.INFO, 'Your note has been deleted.', extra_tags='note-delete-message') # class for css styling
+                return redirect('latest_notes')
+            else:
+                return render(request,'403.html')
         else:
             return redirect('note_detail', note_pk=note.pk)
     

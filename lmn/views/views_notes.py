@@ -35,12 +35,14 @@ def edit_note(request, note_pk):
     
     if request.method == 'POST':
         form = NewNoteForm(request.POST, instance=note) # loads the existing note data on the form
-        
-        if form.is_valid():
-            form.save()
-            return redirect('note_detail', note_pk=note_pk)
+        if request.user.pk != note.user.pk:
+            return render(request, '403.html')
         else:
-            return redirect('edit_note', note_pk=note_pk)
+            if form.is_valid():
+                form.save()
+                return redirect('note_detail', note_pk=note_pk)
+            else:
+                return redirect('edit_note', note_pk=note_pk)
             
     return render(request,'lmn/notes/edit_note.html', {'form': form})
     

@@ -4,6 +4,7 @@ from .models import Note
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.forms import ValidationError
+from django.core.validators import RegexValidator
 
 
 class VenueSearchForm(forms.Form):
@@ -21,6 +22,10 @@ class NewNoteForm(forms.ModelForm):
 
 
 class UserRegistrationForm(UserCreationForm):
+    # Do not allow numeric values in first and last names.
+    # Source: https://techflow360.com/how-to-perform-django-form-validation-with-regex/
+    first_name = forms.CharField(validators=[RegexValidator(r'^[^\d]*$', 'Numeric digits are not allowed.')])
+    last_name = forms.CharField(validators=[RegexValidator(r'^[^\d]*$', 'Numeric digits are not allowed.')])
 
     class Meta:
         model = User
@@ -67,6 +72,50 @@ class UserRegistrationForm(UserCreationForm):
         user.email = self.cleaned_data['email']
         user.first_name = self.cleaned_data['first_name']
         user.last_name = self.cleaned_data['last_name']
+
+        if commit:
+            user.save()
+
+        return user
+
+
+class UserUpdateForm(forms.ModelForm):
+    # Do not allow numeric values in first and last names.
+    # Source: https://techflow360.com/how-to-perform-django-form-validation-with-regex/
+    first_name = forms.CharField(validators=[RegexValidator(r'^[^\d]*$', 'Numeric digits are not allowed.')])
+    last_name = forms.CharField(validators=[RegexValidator(r'^[^\d]*$', 'Numeric digits are not allowed.')])
+
+    class Meta:
+        model = User
+        fields = ('username', 'first_name', 'last_name', 'email')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Taken from Django docs
+        self.fields['first_name'].required = True
+        self.fields['last_name'].required = True
+        self.fields['email'].required = True
+
+    def clean_username(self):
+        username = self.cleaned_data['username']
+
+        if User.objects.filter(username__iexact=username).exclude(pk=self.instance.pk).exists(): # Make sure username doesn't exist in DB already, case-insensitive
+            raise ValidationError('A user with that username already exists')                    # Excludes logged in user's current username
+        
+        return username
+    
+    def clean_email(self):
+        email = self.cleaned_data['email']
+
+        if User.objects.filter(email__iexact=email).exclude(pk=self.instance.pk).exists():  # Make sure email doesn't exist in DB already, case-insensitive
+            raise ValidationError('A user with that email address already exists')          # Excludes logged in user's current email
+
+        return email
+    
+    def save(self, commit=True):
+        user = super(UserUpdateForm, self).save(commit=False)
+        user.username = self.cleaned_data['username']
+        user.email = self.cleaned_data['email']
 
         if commit:
             user.save()

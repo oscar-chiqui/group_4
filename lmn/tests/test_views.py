@@ -815,10 +815,9 @@ class TestShowsWithMostNotesPage(TestCase):
         response = self.client.post(reverse('shows_with_most_notes'), shows=shows_with_different_num_notes)  # Post to view with all shows
         top_5_shows = response.context['top_5_shows']
         
-        self.assertEqual(top_5_shows[0].pk, 3)  # Assert that the view returns the show with pk=3 at the top of the list
-        self.assertEqual(top_5_shows[1].pk, 4)  # Show with pk=4 should be next, and so on
-        self.assertEqual(top_5_shows[2].pk, 2)  
-        self.assertEqual(top_5_shows[3].pk, 1)  
+        expected_pks = [3, 4, 2 ,1]
+        actual_pks = [show.pk for show in top_5_shows]
+        self.assertEqual(expected_pks, actual_pks)  # Assert that the view returns shows in the correct order
                          
     def test_header_displays_correct_number_for_num_top_shows(self):
         # Make sure that the number displayed at the top of the page 'Top {num shows} shows with the most notes'

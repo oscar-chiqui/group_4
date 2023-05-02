@@ -10,16 +10,20 @@ Make sure to be in the root directory of the project and that you have Python 3.
 
 #### Create Virtual Environment
 
-Run the following to create a virtual environment:
+In terminal/command prompt, root directoty of the project.
 
-```bash
-python3 -m venv env
+Setting up virtual environment, Mac
+
+```
+virtualenv -p python3 venv
+source venv/bin/activate
 ```
 
-Activate your newly created virtual environment by running:
+Setting up virtual environment, PC (assuming lab PC with only Python 3 installed)
 
-```bash
-source env/bin/activate
+```
+virtualenv venv
+venv/bin/activate
 ```
 
 To utilize API keys, you will need to create a .env file in your main directory. You will not be able to upload it to this repo as most .gitignore will ignore the file. This is for security reasons as you do not want to post your API Keys to these services out in the open. When you are done creating the .env file, insert your respective keys into the text below and then save the .env file.

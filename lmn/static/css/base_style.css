@@ -161,7 +161,7 @@ a:hover, #clear_search:hover {
   margin: 2px;
 }
 
-.goodbye-message {
+.goodbye-message, .note-edit-message {
   color: red;
   font-weight: bold;
   float: right;

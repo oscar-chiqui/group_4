@@ -161,10 +161,10 @@ a:hover, #clear_search:hover {
   margin: 2px;
 }
 
-.goodbye-message, .note-edit-message {
+.goodbye-message, .note-delete-message {
   color: red;
   font-weight: bold;
-  float: right;
+  float: right; 
 }
 
 .success-message {

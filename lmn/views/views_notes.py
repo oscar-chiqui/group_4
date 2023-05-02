@@ -65,3 +65,33 @@ def note_detail(request, note_pk):
     """ Display one note. """
     note = get_object_or_404(Note, pk=note_pk)
     return render(request, 'lmn/notes/note_detail.html', {'note': note})
+
+
+@login_required
+def delete_note(request, note_pk):
+    """ Delete a particular note about a show. A user can only delete a note created by the user, not the note created by other user. """
+    note = get_object_or_404(Note, pk=note_pk)
+    
+    if request.method == 'POST':
+        return redirect('delete_confirmation', note_pk=note.pk)
+    else:
+        return render(request, 'lmn/notes/note_detail.html', {'note': note})
+
+
+def delete_confirmation(request, note_pk):
+    """ Asks for confirmation if the user truly wants to delete the note or not """
+    note = get_object_or_404(Note, pk=note_pk)
+    
+    if request.method == 'POST':
+        if request.POST.get('confirm') == 'yes':
+            if request.user.pk == note.user.pk:
+                note.delete()
+                messages.add_message(request, messages.INFO, 'Your note has been deleted.', extra_tags='note-delete-message') # class for css styling
+                return redirect('latest_notes')
+            else:
+                return render(request,'403.html')
+        else:
+            return redirect('note_detail', note_pk=note.pk)
+    
+    return render(request, 'lmn/notes/note_delete_confirmation.html', {'note' : note})
+        

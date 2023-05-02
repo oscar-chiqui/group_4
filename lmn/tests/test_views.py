@@ -297,7 +297,7 @@ class TestVenues(TestCase):
         self.assertTemplateUsed(response, 'lmn/artists/artist_list_for_venue.html')
 
 
-class TestAddNoteUnauthentictedUser(TestCase):
+class TestAddNoteUnauthenticatedUser(TestCase):
     # Have to add artists and venues because of foreign key constrains in show
     fixtures = ['testing_artists', 'testing_venues', 'testing_shows'] 
 
@@ -418,6 +418,204 @@ class TestUserProfile(TestCase):
         # for currently logged in user, in this case, bob
         response = self.client.get(reverse('user_profile', kwargs={'user_pk': 3}))
         self.assertContains(response, 'You are logged in, <a href="/user/profile/2/">bob</a>.')
+
+    def test_user_can_see_account_information(self):  # Ensure that the logged in user sees their own info on their profile
+        logged_in_user = User.objects.get(pk=1)  # Alice
+        self.client.force_login(logged_in_user)
+        response = self.client.get(reverse('user_profile', kwargs={'user_pk': 1}))  # Alice's profile
+        self.assertContains(response, 'username: alice')
+        self.assertContains(response, 'email: a@a.com')
+        self.assertContains(response, 'full name: alice last')
+
+    def test_user_cannot_see_other_users_account_information(self):  # Ensure that users cannot see other users' account info
+        logged_in_user = User.objects.get(pk=2)  # Bob
+        self.client.force_login(logged_in_user)
+        response = self.client.get(reverse('user_profile', kwargs={'user_pk': 1}))  # Alice's profile
+        self.assertNotContains(response, 'username: alice')
+        self.assertNotContains(response, 'email: a@a.com')
+        self.assertNotContains(response, 'full name: alice last')
+
+    def test_user_can_see_own_edit_button_on_profile(self):
+        logged_in_user = User.objects.get(pk=3)  # cat
+        self.client.force_login(logged_in_user)
+        response = self.client.get(reverse('user_profile', kwargs={'user_pk': 3}))  # cat's profile
+        self.assertContains(response, 'Edit Account Info')  # Ensure that user's can see button including this text
+
+    def test_user_cannot_see_edit_button_on_other_user_profile(self):
+        logged_in_user = User.objects.get(pk=3)  # cat
+        self.client.force_login(logged_in_user)
+        response = self.client.get(reverse('user_profile', kwargs={'user_pk': 1}))  # Alice's profile
+        self.assertNotContains(response, 'Edit Account Info')  # Ensure that user's cannot see button including this text
+
+    def test_user_account_information_successfully_updated(self):
+        logged_in_user = User.objects.get(pk=2)  # Bob
+        self.client.force_login(logged_in_user)
+        edit_profile_url = reverse('edit_user_account_info', kwargs={'user_pk': logged_in_user.pk})
+        self.client.post(
+            edit_profile_url, 
+            {'username': 'bobby', 'email': 'bob123@gmail.com', 'first_name': 'Bob', 'last_name': 'Browne'}, 
+            follow=True
+        )
+        # Ensure that user's new information is the same as the post request
+        updated_user = User.objects.get(pk=2)
+        self.assertEqual(updated_user.username, 'bobby')
+        self.assertEqual(updated_user.email, 'bob123@gmail.com')
+        self.assertEqual(updated_user.first_name, 'Bob')
+        self.assertEqual(updated_user.last_name, 'Browne')
+
+    def test_user_cannot_edit_other_user_account_info(self):
+        logged_in_user = User.objects.get(pk=2)  # Bob
+        self.client.force_login(logged_in_user)
+        edit_account_url = reverse('edit_user_account_info', kwargs={'user_pk': 1})  # Alice
+
+        response = self.client.get(edit_account_url)
+
+        # Assert that user is redirected to the 403 template when they try to access the URL
+        # of another user's account edit page
+        self.assertTemplateUsed(response, '403.html')
+        self.assertTemplateUsed(response, 'lmn/base.html')
+
+    def test_request_is_made_to_own_user_account_info_not_logged_in(self):
+        edit_account_url = reverse('edit_user_account_info', kwargs={'user_pk': 3})
+
+        response = self.client.get(edit_account_url)  # Attempt to edit an account
+        
+        # Assert that the response redirects the user to the login page
+        self.assertRedirects(response, '/accounts/login/?next=/user/edit_account_info/3/')
+
+    def test_user_cannot_have_duplicate_email(self):
+        logged_in_user = User.objects.get(pk=2)  # Bob
+        self.client.force_login(logged_in_user)
+
+        edit_account_url = reverse('edit_user_account_info', kwargs={'user_pk': 2}) # Bob's edit account page
+
+        response = self.client.post(
+            edit_account_url,          # Alice's username
+            {'username': 'bobby', 'email': 'a@a.com', 'first_name': 'Bob', 'last_name': 'Browne'}, 
+            follow=True
+        )    
+
+        self.assertContains(response, 'A user with that email address already exists', status_code=200)
+
+    def test_user_can_click_save_with_current_info_and_not_get_error(self):
+        # Test that a user can go to edit account page and hit save with their own prepopulated
+        # data and not get a message saying that the username or email already exists
+        logged_in_user = User.objects.get(pk=2)  # Bob
+        self.client.force_login(logged_in_user)
+
+        edit_account_url = reverse('edit_user_account_info', kwargs={'user_pk': 2}) # Bob's edit account page
+
+        response = self.client.post(
+            edit_account_url,          
+            {'username': 'bob','email': 'b@b.com', 'first_name': 'bob', 'last_name': 'last'},  # Bob's current information
+            follow=True
+        )  
+
+        # Bob should be able to hit save with the prepopulated information without receiving these messages
+        self.assertNotContains(response, 'User with this Email address already exists.', status_code=200)
+        self.assertNotContains(response, 'A user with that username already exists.', status_code=200)
+
+    def test_user_cannot_leave_username_blank(self):
+        logged_in_user = User.objects.get(pk=2)  # Bob
+        self.client.force_login(logged_in_user)
+
+        edit_account_url = reverse('edit_user_account_info', kwargs={'user_pk': 2}) # Bob's edit account page
+
+        response = self.client.post(
+            edit_account_url,          
+            {'username': '','email': 'b@b.com', 'first_name': 'bob', 'last_name': 'last'},  # Bob's current information minus username
+            follow=True
+        )  
+        
+        self.assertContains(response, 'This field is required.')
+        self.assertContains(response, 'Please check the data you entered')
+
+    def test_user_cannot_leave_email_blank(self):
+        logged_in_user = User.objects.get(pk=2)  # Bob
+        self.client.force_login(logged_in_user)
+
+        edit_account_url = reverse('edit_user_account_info', kwargs={'user_pk': 2}) # Bob's edit account page
+
+        response = self.client.post(
+            edit_account_url,          
+            {'username': '','email': '', 'first_name': 'bob', 'last_name': 'last'},  # Bob's current information minus email
+            follow=True
+        )  
+        
+        self.assertContains(response, 'This field is required.')
+        self.assertContains(response, 'Please check the data you entered')
+
+    def test_user_cannot_leave_first_name_blank(self):
+        logged_in_user = User.objects.get(pk=2)  # Bob
+        self.client.force_login(logged_in_user)
+
+        edit_account_url = reverse('edit_user_account_info', kwargs={'user_pk': 2}) # Bob's edit account page
+
+        response = self.client.post(
+            edit_account_url,          
+            {'username': '','email': 'b@b.com', 'first_name': '', 'last_name': 'last'},  # Bob's current information minus first name
+            follow=True
+        )  
+        
+        self.assertContains(response, 'This field is required.')
+        self.assertContains(response, 'Please check the data you entered')
+
+    def test_user_cannot_leave_last_name_blank(self):
+        logged_in_user = User.objects.get(pk=2)  # Bob
+        self.client.force_login(logged_in_user)
+
+        edit_account_url = reverse('edit_user_account_info', kwargs={'user_pk': 2}) # Bob's edit account page
+
+        response = self.client.post(
+            edit_account_url,          
+            {'username': '','email': 'b@b.com', 'first_name': 'bob', 'last_name': 'last'},  # Bob's current information minus last name
+            follow=True
+        )  
+        
+        self.assertContains(response, 'This field is required.')
+        self.assertContains(response, 'Please check the data you entered')
+    
+    def test_user_cannot_add_numbers_to_first_name(self):
+        logged_in_user = User.objects.get(pk=2)  # Bob
+        self.client.force_login(logged_in_user)
+
+        edit_account_url = reverse('edit_user_account_info', kwargs={'user_pk': 2}) # Bob's edit account page
+
+        response = self.client.post(
+            edit_account_url,          
+            {'username': 'bob','email': 'b@b.com', 'first_name': 'bob123', 'last_name': 'last'},  # Bob's User data with numbers in the first name
+            follow=True
+        )  
+
+        self.assertContains(response, 'Numeric digits are not allowed.')
+    
+    def test_user_cannot_add_numbers_to_last_name(self):
+        logged_in_user = User.objects.get(pk=2)  # Bob
+        self.client.force_login(logged_in_user)
+
+        edit_account_url = reverse('edit_user_account_info', kwargs={'user_pk': 2}) # Bob's edit account page
+
+        response = self.client.post(
+            edit_account_url,          
+            {'username': 'bob','email': 'b@b.com', 'first_name': 'bob', 'last_name': 'last123'},  # Bob's User data with numbers in the last name
+            follow=True
+        )  
+
+        self.assertContains(response, 'Numeric digits are not allowed.')
+
+    def test_edit_account_form_prepopulated_with_user_data(self):
+        logged_in_user = User.objects.get(pk=2)  # Bob
+        self.client.force_login(logged_in_user)
+
+        edit_account_url = reverse('edit_user_account_info', kwargs={'user_pk': 2}) # Bob's edit account page
+
+        response = self.client.get(edit_account_url)
+
+        # Assert that Bob's account information is populating the form upon visiting the page
+        self.assertContains(response, 'bob')
+        self.assertContains(response, 'bob')
+        self.assertContains(response, 'last')
+        self.assertContains(response, 'b@b.com')
 
 
 class TestNotes(TestCase):

@@ -21,6 +21,10 @@
       <button>Edit Account Info</button>
     </form>
 
+    <form method="link" action="{% url 'change_user_password' user_pk=user.pk %}">
+      <button>Change password</button>
+    </form>
+
   {% endif %}
 
   <h2 id="username-notes">{{ user_profile.username }}'s notes</h2>

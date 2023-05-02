@@ -27,6 +27,26 @@ def new_note(request, show_pk):
 
     return render(request, 'lmn/notes/new_note.html', {'form': form, 'show': show})
 
+@login_required
+def edit_note(request, note_pk):
+    """ Edit a particular note about a show. A user can only edit a note created by the user and not the note created by other users.  """
+    note = get_object_or_404(Note, pk=note_pk)
+    form = NewNoteForm(instance=note)
+    
+    if request.method == 'POST':
+        form = NewNoteForm(request.POST, instance=note) # loads the existing note data on the form
+        if request.user.pk != note.user.pk:
+            return render(request, '403.html')
+        else:
+            if form.is_valid():
+                form.save()
+                return redirect('note_detail', note_pk=note_pk)
+            else:
+                return redirect('edit_note', note_pk=note_pk)
+            
+    return render(request,'lmn/notes/edit_note.html', {'form': form})
+    
+
 
 def latest_notes(request):
     """ Get the 20 most recent notes, ordered with most recent first. """

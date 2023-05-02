@@ -714,6 +714,54 @@ class TestNotes(TestCase):
         
         
 
+    def test_render_403_if_user_edit_note_created_by_others(self):
+        
+        # Log someone in
+        self.client.force_login(User.objects.first()) # alice
+        response = self.client.post(reverse('edit_note', kwargs={'note_pk': 2})) # note created by bob
+        self.assertTemplateUsed(response, '403.html')
+        
+    def test_render_note_detail_if_user_edited_form_that_the_user_created_and_form_is_valid(self):
+        
+        self.client.force_login(User.objects.first()) # alice
+        
+        edit_note_url = reverse('edit_note', kwargs={'note_pk': 1}) # edit note page
+        
+        response = self.client.post(
+            edit_note_url,
+            {'title': 'testing', 'text': 'Testing note created'},
+            follow=True
+        ) # updating note
+        self.assertTemplateUsed(response, 'lmn/notes/note_detail.html')
+        
+    def test_render_edit_note_if_user_edited_form_that_the_user_created_and_form_is_valid(self):
+        
+        self.client.force_login(User.objects.first()) # alice
+        
+        edit_note_url = reverse('edit_note', kwargs={'note_pk': 1}) # edit note page
+        
+        response = self.client.post( # invalid form, form can't be blank
+            edit_note_url,
+            {'title': '', 'text': ''},
+            follow=True
+        ) # updating note
+        self.assertTemplateUsed(response, 'lmn/notes/edit_note.html')
+        
+    def test_edit_note_success_if_editing_own_note_and_form_is_valid(self):
+        
+        self.client.force_login(User.objects.first()) # alice
+        
+        edit_note_url = reverse('edit_note', kwargs={'note_pk': 1}) # edit note page
+        
+        response = self.client.post(
+            edit_note_url,
+            {'title': 'testing', 'text': 'Testing note created'},
+            follow=True
+        ) # updating note
+        
+        self.assertContains(response,'testing')
+        self.assertContains(response,'Testing note created')
+
 
 class TestUserAuthentication(TestCase):
     """ Some aspects of registration (e.g. missing data, duplicate username) covered in test_forms """

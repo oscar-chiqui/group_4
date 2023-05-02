@@ -1,11 +1,34 @@
 # LMNOP
 
-## Live Music Notes, Opinions, Photographs
+LMNOP is a musical venue and artist booking site that facilitates the discovery and bookings of shows between local performing artists and venues. This site lets you list new artists and venues, and create notes to share with other users.
 
+## Getting Started
 
-### To install
+### Installation
 
-1. Create and activate a virtual environment. Use Python3 as the interpreter. Suggest locating the venv/ directory outside of the code directory.
+Make sure to be in the root directory of the project and that you have Python 3.6 or above installed.
+
+#### Create Virtual Environment
+
+Run the following to create a virtual environment:
+
+```bash
+python3 -m venv env
+```
+
+Activate your newly created virtual environment by running:
+
+```bash
+source env/bin/activate
+```
+
+To utilize API keys, you will need to create a .env file in your main directory. You will not be able to upload it to this repo as most .gitignore will ignore the file. This is for security reasons as you do not want to post your API Keys to these services out in the open. When you are done creating the .env file, insert your respective keys into the text below and then save the .env file.
+
+```
+TICKETMASTER_KEY ='INSERT TICKETMASTER_KEY KEY HERE'
+```
+
+To install all project's dependencies, simply run:
 
 ```
 pip install -r requirements.txt
@@ -17,7 +40,6 @@ python manage.py runserver
 Site at
 
 http://127.0.0.1:8000
-
 
 ### Create superuser
 
@@ -31,10 +53,9 @@ Then you will be able to use these to log into admin console at
 
 127.0.0.1:8000/admin/
 
-Create some example Artists, Venues, and Shows for the app to use. A user will create Notes using the app. 
+Create some example Artists, Venues, and Shows for the app to use. A user will create Notes using the app.
 
 ### Run tests
-
 
 ```
 python manage.py test
@@ -47,7 +68,6 @@ python manage.py test lmn.tests.test_views
 python manage.py test lmn.tests.test_views.TestUserAuthentication
 python manage.py test lmn.tests.test_views.TestUserAuthentication.test_user_registration_logs_user_in
 ```
-
 
 ### Functional Tests with Selenium
 
@@ -64,11 +84,11 @@ python manage.py test lmn.tests.functional_tests.functional_tests
 ```
 
 Or select tests, for example,
+
 ```
 python manage.py test lmn.functional_tests.functional_tests.HomePageTest
 python manage.py test lmn.functional_tests.functional_tests.BrowseArtists.test_searching_artists
 ```
-
 
 ### Test coverage
 
@@ -87,8 +107,8 @@ Ensure requirements are installed, then run,
 flake8 .
 ```
 
-Configure linting rules if desired in the .flake8 file. 
+Configure linting rules if desired in the .flake8 file.
 
 ### Databases
 
-You will likely want to configure the app to use SQLite locally, and PaaS database when deployed.  
+You will likely want to configure the app to use SQLite locally, and PaaS database when deployed.

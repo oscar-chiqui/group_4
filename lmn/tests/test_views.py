@@ -419,9 +419,9 @@ class TestUserProfile(TestCase):
         logged_in_user = User.objects.get(pk=1)  # Alice
         self.client.force_login(logged_in_user)
         response = self.client.get(reverse('user_profile', kwargs={'user_pk': 1}))  # Alice's profile
-        self.assertContains(response, 'username: alice')
-        self.assertContains(response, 'email: a@a.com')
-        self.assertContains(response, 'full name: alice last')
+        self.assertContains(response, 'Username: alice')
+        self.assertContains(response, 'Email: a@a.com')
+        self.assertContains(response, 'Full Name: alice last')
 
     def test_user_cannot_see_other_users_account_information(self):  # Ensure that users cannot see other users' account info
         logged_in_user = User.objects.get(pk=2)  # Bob

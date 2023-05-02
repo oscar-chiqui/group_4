@@ -614,6 +614,17 @@ class TestUserProfile(TestCase):
         self.assertContains(response, 'b@b.com')
 
 
+class TestUserPasswordChange(TestCase):
+
+    fixtures = ['testing_users']
+
+    def test_unauthenticated_user_cannot_access_page(self):
+        # Unauthenticated users should not be able to access change_user_password page
+        response = self.client.get(reverse('change_user_password', kwargs={'user_pk': 1}), follow=True) 
+        # Should redirect to login; which will then redirect to the /user/change_password/1/ page on success.
+        self.assertRedirects(response, '/accounts/login/?next=/user/change_password/1/')
+
+
 class TestNotes(TestCase):
     # Have to add Notes and Users and Show, and also artists and venues because of foreign key constrains in Show
     fixtures = ['testing_users', 'testing_artists', 'testing_venues', 'testing_shows', 'testing_notes'] 

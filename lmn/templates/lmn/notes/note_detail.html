@@ -25,6 +25,7 @@
     </form>
   {% endif %}
 
+  {% if note.user.pk == request.user.pk %}
 
     <form method="POST" action="{% url 'edit_note' note_pk=note.pk %}">
       {% csrf_token %}

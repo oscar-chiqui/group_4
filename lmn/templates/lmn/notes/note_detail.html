@@ -3,9 +3,10 @@
 
 {% block content %}
 
-  {% if messsages %}
+
+  {% if messages %}
     {% for message in messages %}
-      <span {% if message.tags %} class="{{ message.tags }}" {% endif %}{% if message.extra_tags %}{{ message.extra_tags }} {% endif %}>{{ message }}</span>
+      <span {% if message.tags %} class="{{ message.tags }}" {% endif %}{% if message.extra_tags %}{{ message.extra_tags }}{% endif %}>{{ message }}</span>
     {% endfor %}
   {% endif %}
 
@@ -17,12 +18,22 @@
   <p id="note-text">{{ note.text }}</p>
 
   {% if note.user.pk == request.user.pk %}
+
+    <form method="POST" action="{% url 'delete_note' note_pk=note.pk %}">
+      {% csrf_token %}
+      <button type="submit">Delete</button>
+    </form>
+  {% endif %}
+
+  {% if note.user.pk == request.user.pk %}
+
     <form method="POST" action="{% url 'edit_note' note_pk=note.pk %}">
       {% csrf_token %}
       <button type="submit">Edit</button>
     </form>
   {% endif %}
   
+
   <div class="share-buttons">
     <a href="https://twitter.com/intent/tweet?text={{ note.text }}&url={{ request.build_absolute_uri }}" target="_blank">
       <img src="{% static 'images/twitter.png' %}" alt="Share on Twitter">

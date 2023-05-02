@@ -423,9 +423,9 @@ class TestUserProfile(TestCase):
         logged_in_user = User.objects.get(pk=1)  # Alice
         self.client.force_login(logged_in_user)
         response = self.client.get(reverse('user_profile', kwargs={'user_pk': 1}))  # Alice's profile
-        self.assertContains(response, 'username: alice')
-        self.assertContains(response, 'email: a@a.com')
-        self.assertContains(response, 'full name: alice last')
+        self.assertContains(response, 'Username: alice')
+        self.assertContains(response, 'Email: a@a.com')
+        self.assertContains(response, 'Full Name: alice last')
 
     def test_user_cannot_see_other_users_account_information(self):  # Ensure that users cannot see other users' account info
         logged_in_user = User.objects.get(pk=2)  # Bob
@@ -659,6 +659,65 @@ class TestNotes(TestCase):
         response = self.client.get(reverse('new_note', kwargs={'show_pk': 1}))
         self.assertTemplateUsed(response, 'lmn/notes/new_note.html')
         
+    def test_delete_note_render_delete_confirmation_page(self):
+        
+        self.client.force_login(User.objects.first()) # alice
+        response = self.client.post(reverse('delete_note', kwargs={'note_pk': 1}), follow=True)
+        self.assertTemplateUsed(response, 'lmn/notes/note_delete_confirmation.html')
+        
+    def test_delete_note_render_note_detail_if_request_is_get(self):
+        
+        self.client.force_login(User.objects.first()) # alice
+        response = self.client.get(reverse('delete_note', kwargs={'note_pk': 1}), follow=True)
+        self.assertTemplateUsed(response, 'lmn/notes/note_detail.html')
+        
+    def test_delete_confirmation_render_403_when_trying_to_delete_other_users_note(self):
+        
+        self.client.force_login(User.objects.first()) # alice
+        delete_confirmation_url = reverse('delete_confirmation', kwargs={'note_pk': 2}) # note by bob
+        response = self.client.post(
+            delete_confirmation_url,
+            {'confirm':'yes'}, # confirmed
+            follow=True
+        )
+        self.assertTemplateUsed(response, '403.html') # unable to delete
+        
+    def test_delete_confirmation_success_when_confirming_to_delete_note_created_by_the_user(self):
+        
+        self.client.force_login(User.objects.first()) # alice
+        delete_confirmation_url = reverse('delete_confirmation', kwargs={'note_pk': 1}) # note by alice
+        response = self.client.post(
+            delete_confirmation_url,
+            {'confirm':'yes'}, # confirmed
+            follow=True
+        )
+        self.assertTemplateUsed(response,'lmn/notes/note_list.html') # note deleted and shows latest notes
+        self.assertContains(response,'Your note has been deleted.')
+    
+    def test_delete_confirmation_renders_note_detail_if_deletion_not_confirmed(self):
+        
+        self.client.force_login(User.objects.first()) # alice
+        delete_confirmation_url = reverse('delete_confirmation', kwargs={'note_pk': 1}) # note by alice
+        response = self.client.post(
+            delete_confirmation_url,
+            {'confirm':'no'}, # confirmed
+            follow=True
+        )
+        self.assertTemplateUsed(response,'lmn/notes/note_detail.html')
+        
+    def test_delete_confirmation_renders_confirmation_page_if_request_is_get(self):
+        
+        self.client.force_login(User.objects.first()) # alice
+        delete_confirmation_url = reverse('delete_confirmation', kwargs={'note_pk': 1}) # note by alice
+        response = self.client.get(
+            delete_confirmation_url,
+            {'confirm':'yes'}, # confirmed
+            follow=True
+        )
+        self.assertTemplateUsed(response,'lmn/notes/note_delete_confirmation.html')
+        
+        
+
     def test_render_403_if_user_edit_note_created_by_others(self):
         
         # Log someone in

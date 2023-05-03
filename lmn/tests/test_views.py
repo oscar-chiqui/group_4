@@ -634,6 +634,20 @@ class TestUserPasswordChange(TestCase):
         self.assertTemplateUsed(response, '403.html')  # Assert that Bob gets redirected to 403 template 
         self.assertTemplateUsed(response, 'lmn/base.html')
 
+    def test_user_password_changed_successfully(self):
+        # Have to create new user - fixture users' passwords do not pass requirements
+        logged_in_user = User.objects.create_user(username='test', email='t@t.com', first_name='test', last_name='test', password='testPASSword12')
+        self.client.force_login(logged_in_user)
+
+        response = self.client.post(
+            reverse('change_user_password', kwargs={'user_pk': 4}), 
+            {'old_password': 'testPASSword12', 'new_password1': 'Hello-World187', 'new_password2': 'Hello-World187'}, 
+            follow=True)
+        
+        logged_in_user.refresh_from_db()  # Refresh user instance in database
+
+        self.assertTrue(logged_in_user.check_password('Hello-World187'))  # Assert user's password updated 
+
 
 class TestNotes(TestCase):
     # Have to add Notes and Users and Show, and also artists and venues because of foreign key constrains in Show

@@ -716,6 +716,11 @@ class TestUserPasswordChange(TestCase):
         self.client.force_login(logged_in_user)
         response = self.client.get(reverse('user_profile', kwargs={'user_pk': 1}))  # Alice's profile
         self.assertNotContains(response, 'Change Password')  # Ensure that user's cannot see button including this text
+    
+    def test_unauthenticated_user_cannot_see_change_password_button(self):
+        # No logged in user. Should not be able to see change password button
+        response = self.client.get(reverse('user_profile', kwargs={'user_pk': 1}))  # Alice's profile
+        self.assertNotContains(response, 'Change Password')  # Ensure that user's cannot see button including this text
 
 
 class TestNotes(TestCase):

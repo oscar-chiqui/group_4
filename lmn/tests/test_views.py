@@ -711,6 +711,12 @@ class TestUserPasswordChange(TestCase):
 
         self.assertContains(response, 'The two password fields didn’t match.')
 
+    def test_user_cannot_see_change_password_button_on_other_user_profile(self):
+        logged_in_user = User.objects.get(pk=3)  # cat
+        self.client.force_login(logged_in_user)
+        response = self.client.get(reverse('user_profile', kwargs={'user_pk': 1}))  # Alice's profile
+        self.assertNotContains(response, 'Change Password')  # Ensure that user's cannot see button including this text
+
 
 class TestNotes(TestCase):
     # Have to add Notes and Users and Show, and also artists and venues because of foreign key constrains in Show

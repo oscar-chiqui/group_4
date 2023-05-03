@@ -636,7 +636,7 @@ class TestUserPasswordChange(TestCase):
 
     def test_user_password_changed_successfully(self):
         # Have to create new user - fixture users' passwords do not pass requirements
-        logged_in_user = User.objects.create_user(username='test', email='t@t.com', first_name='test', last_name='test', password='testPASSword12')
+        logged_in_user = User.objects.create_user(username='test', password='testPASSword12')
         self.client.force_login(logged_in_user)
 
         response = self.client.post(
@@ -647,6 +647,21 @@ class TestUserPasswordChange(TestCase):
         logged_in_user.refresh_from_db()  # Refresh user instance in database
 
         self.assertTrue(logged_in_user.check_password('Hello-World187'))  # Assert user's password updated 
+
+    def test_user_session_auth_hash_changed_when_password_changes(self):
+        logged_in_user = User.objects.create_user(username='test', password='password123')
+        self.client.force_login(logged_in_user)
+
+        # Make POST request to change password
+        response = self.client.post(
+            reverse('change_user_password', kwargs={'user_pk': logged_in_user.pk}),
+            {'old_password': 'password123', 'new_password1': 'newpassword123', 'new_password2': 'newpassword123'},
+            follow=True
+        )
+
+        # Check that the session auth hash is updated
+        session = self.client.session
+        self.assertTrue(session.get('SESSION_HASH_CHANGED', True))
 
 
 class TestNotes(TestCase):

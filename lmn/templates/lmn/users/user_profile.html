@@ -21,7 +21,7 @@
         <button class="edit-btn">Edit Account Info</button>
       </form>
       
-      <form method="link" action="{% url 'change_user_password' user_pk=user.pk %}">
+      <form class="change-password" method="link" action="{% url 'change_user_password' user_pk=user.pk %}">
         <button>Change password</button>
       </form>
     </div>

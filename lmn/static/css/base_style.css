@@ -177,7 +177,7 @@ form button {
   font-size: 14px;
   margin-top: 10px;
 }
-.edit-profile {
+.edit-profile, .change-password {
   margin: 0;
   padding: 0;
 }

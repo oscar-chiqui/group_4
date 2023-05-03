@@ -10,10 +10,14 @@
   <body>
 
     <h1>LMN</h1>
-
-    <a class="btn btn-primary" href="{% url 'venue_list' %}">Venues</a>
-    <a class="btn btn-primary" href="{% url 'artist_list' %}">Artists</a>
-    <a class="btn btn-primary" href="{% url 'latest_notes' %}">Notes</a>
+    <div class="navlinks">
+      <a class="btn btn-primary" href="{% url 'venue_list' %}">Venues</a>
+      <p>|</p>
+      <a class="btn btn-primary" href="{% url 'artist_list' %}">Artists</a>
+      <p>|</p>
+      <a class="btn btn-primary" href="{% url 'latest_notes' %}">Notes</a>
+      <p>|</p>
+    </div>
 
     {% if user.is_authenticated %}
 

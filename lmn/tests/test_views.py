@@ -663,6 +663,19 @@ class TestUserPasswordChange(TestCase):
         session = self.client.session
         self.assertTrue(session.get('SESSION_HASH_CHANGED', True))
 
+    def test_user_redirected_to_profile_page_when_password_successfully_changed(self):
+        logged_in_user = User.objects.create_user(username='test', password='password123')
+        self.client.force_login(logged_in_user)
+
+        # Make POST request to change password
+        response = self.client.post(
+            reverse('change_user_password', kwargs={'user_pk': logged_in_user.pk}),
+            {'old_password': 'password123', 'new_password1': 'newpassword123', 'new_password2': 'newpassword123'},
+            follow=True
+        )
+
+        self.assertRedirects(response, '/user/profile/4/')
+
 
 class TestNotes(TestCase):
     # Have to add Notes and Users and Show, and also artists and venues because of foreign key constrains in Show

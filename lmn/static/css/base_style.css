@@ -72,9 +72,13 @@ a, #clear_search {
 a:hover, #clear_search:hover {
   text-decoration: underline;
 }
+.navlinks {
+  display: ruby;
+}
 /* Positioning */
 #welcome-user-msg, #login-or-sign-up {
   position: absolute;
+  top: 85px;
   right: 0;
   padding-right: 10px;
 }

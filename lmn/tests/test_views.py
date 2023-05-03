@@ -685,6 +685,18 @@ class TestUserPasswordChange(TestCase):
 
         self.assertTemplateUsed(response, 'lmn/users/change_user_password.html')
 
+    def test_error_message_shown_when_old_password_incorrect(self):
+        logged_in_user = User.objects.create_user(username='test', password='password123')
+        self.client.force_login(logged_in_user)
+
+        # Make POST request to change password with incorrect old password
+        response = self.client.post(
+            reverse('change_user_password', kwargs={'user_pk': logged_in_user.pk}),
+            {'old_password': 'incorrect_password', 'new_password1': 'newpassword123', 'new_password2': 'newpassword123'},
+            follow=True
+        )
+
+        self.assertContains(response, 'Your old password was entered incorrectly. Please enter it again.')
 
 class TestNotes(TestCase):
     # Have to add Notes and Users and Show, and also artists and venues because of foreign key constrains in Show

@@ -43,7 +43,7 @@ button[type="submit"], #add-new-show-link {
 }
 #add-new-show-link {
   font-size: large;
-  color: violet;
+  color: white;
 }
 /* Form */
 .form, form {

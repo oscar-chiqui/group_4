@@ -2,12 +2,37 @@
 {% load static %}
 
 {% block content %}
+
+
+  {% if messages %}
+    {% for message in messages %}
+      <span {% if message.tags %} class="{{ message.tags }}" {% endif %}{% if message.extra_tags %}{{ message.extra_tags }}{% endif %}>{{ message }}</span>
+    {% endfor %}
+  {% endif %}
+
   <h2 id="note-page-title">{{ note.show.artist.name }} at {{ note.show.venue.name }} by 
     <a href="{% url 'user_profile' user_pk=note.user.pk %}">{{ note.user.username }}</a>
   </h2>
 
   <p id="note-title"><b>{{ note.title }}</b></p>
   <p id="note-text">{{ note.text }}</p>
+
+  {% if note.user.pk == request.user.pk %}
+
+    <form method="POST" action="{% url 'delete_note' note_pk=note.pk %}">
+      {% csrf_token %}
+      <button type="submit">Delete</button>
+    </form>
+  {% endif %}
+
+  {% if note.user.pk == request.user.pk %}
+
+    <form method="POST" action="{% url 'edit_note' note_pk=note.pk %}">
+      {% csrf_token %}
+      <button type="submit">Edit</button>
+    </form>
+  {% endif %}
+  
 
   <div class="share-buttons">
     <a href="https://twitter.com/intent/tweet?text={{ note.text }}&url={{ request.build_absolute_uri }}" target="_blank">
@@ -20,4 +45,5 @@
       <span>Share on Facebook</span>
     </a>
   </div>
+
 {% endblock %}

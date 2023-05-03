@@ -73,7 +73,7 @@ a:hover, #clear_search:hover {
   text-decoration: underline;
 }
 .navlinks {
-  display: ruby;
+  display: block ruby;
 }
 /* Positioning */
 #welcome-user-msg, #login-or-sign-up {

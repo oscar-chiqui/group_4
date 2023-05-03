@@ -223,3 +223,6 @@ form button {
   font-size: 24px;
   margin-top: 50px;
 }
+form .errorlist {
+  color: red
+}

@@ -43,7 +43,7 @@ button[type="submit"], #add-new-show-link {
 }
 #add-new-show-link {
   font-size: large;
-  color: violet;
+  color: white;
 }
 /* Form */
 .form, form {
@@ -72,9 +72,15 @@ a, #clear_search {
 a:hover, #clear_search:hover {
   text-decoration: underline;
 }
+.navlinks a,
+.navlinks p {
+  display: inline-block;
+}
+
 /* Positioning */
 #welcome-user-msg, #login-or-sign-up {
   position: absolute;
+  top: 85px;
   right: 0;
   padding-right: 10px;
 }
@@ -218,8 +224,11 @@ form button {
 .venue-notes, .artist-notes {
   font-size: 14px;
 }
-.no-venues-found {
+form .errorlist {
+  color: red
+}
+.no-records {
   text-align: center;
-  font-size: 24px;
+  font-size: 15px;
   margin-top: 50px;
 }

@@ -226,3 +226,8 @@ form button {
 form .errorlist {
   color: red
 }
+#no-records {
+  text-align: center;
+  font-size: 15px;
+  margin-top: 50px;
+}

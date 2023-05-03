@@ -698,6 +698,20 @@ class TestUserPasswordChange(TestCase):
 
         self.assertContains(response, 'Your old password was entered incorrectly. Please enter it again.')
 
+    def test_error_message_shown_when_new_passwords_dont_match(self):
+        logged_in_user = User.objects.create_user(username='test', password='password123')
+        self.client.force_login(logged_in_user)
+
+        # Make POST request to change password with incorrect old password
+        response = self.client.post(
+            reverse('change_user_password', kwargs={'user_pk': logged_in_user.pk}),
+            {'old_password': 'password123', 'new_password1': 'password', 'new_password2': 'mismatched_password'},
+            follow=True
+        )
+
+        self.assertContains(response, 'The two password fields didn’t match.')
+
+
 class TestNotes(TestCase):
     # Have to add Notes and Users and Show, and also artists and venues because of foreign key constrains in Show
     fixtures = ['testing_users', 'testing_artists', 'testing_venues', 'testing_shows', 'testing_notes'] 

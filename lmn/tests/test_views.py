@@ -676,6 +676,15 @@ class TestUserPasswordChange(TestCase):
 
         self.assertRedirects(response, '/user/profile/4/')
 
+    def test_password_change_template_used(self):
+
+        logged_in_user = User.objects.get(pk=1)
+        self.client.force_login(logged_in_user)
+
+        response = self.client.get(reverse('change_user_password', kwargs={'user_pk': 1}), follow=True)
+
+        self.assertTemplateUsed(response, 'lmn/users/change_user_password.html')
+
 
 class TestNotes(TestCase):
     # Have to add Notes and Users and Show, and also artists and venues because of foreign key constrains in Show

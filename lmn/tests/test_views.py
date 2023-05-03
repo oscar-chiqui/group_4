@@ -626,12 +626,12 @@ class TestUserPasswordChange(TestCase):
 
     def test_user_cannot_change_other_users_password(self):
         # Users should not be able to change a password that isn't their own
-        logged_in_user = User.objects.get(pk=1)  # Bob
+        logged_in_user = User.objects.get(pk=1)  # Alice
         self.client.force_login(logged_in_user)
 
-        response = self.client.get(reverse('change_user_password', kwargs={'user_pk': 2}), follow=True)  # Alice's change password URL
+        response = self.client.get(reverse('change_user_password', kwargs={'user_pk': 2}), follow=True)  # Bob's change password URL
 
-        self.assertTemplateUsed(response, '403.html')  # Assert that Bob gets redirected to 403 template 
+        self.assertTemplateUsed(response, '403.html')  # Assert that Alice gets redirected to 403 template 
         self.assertTemplateUsed(response, 'lmn/base.html')
 
     def test_user_password_changed_successfully(self):

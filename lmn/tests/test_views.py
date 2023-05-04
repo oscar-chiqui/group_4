@@ -9,7 +9,7 @@ import re
 import datetime
 from datetime import timezone
 
-from lmn.models import Note
+from lmn.models import Note, Show
 from django.contrib.auth.models import User
 
 
@@ -36,6 +36,10 @@ class TestEmptyViews(TestCase):
     def test_with_no_notes_returns_empty_list(self):
         response = self.client.get(reverse('latest_notes'))
         self.assertFalse(response.context['notes'])  # An empty list is false
+
+    def test_with_no_shows_returns_empty_list(self):
+        response = self.client.get(reverse('shows_with_most_notes'))
+        self.assertFalse(response.context['top_5_shows'])  # An empty list is false
 
 
 class TestArtistViews(TestCase):
@@ -870,6 +874,69 @@ class TestNotes(TestCase):
         
         self.assertContains(response,'testing')
         self.assertContains(response,'Testing note created')
+
+
+class TestShowsWithMostNotesPage(TestCase):
+    # Have to add Notes, Users, and Shows, and also artists and venues because of foreign key constrains in Show
+    fixtures = ['testing_users', 'testing_artists', 'testing_venues', 'testing_shows_most_notes', 'testing_notes_for_top_shows']
+
+    def test_list_shows_most_notes_correct_template_used(self): 
+
+        response = self.client.get(reverse('shows_with_most_notes'))
+        self.assertTemplateUsed(response, 'lmn/shows/shows_with_most_notes.html')
+    
+    def test_artist_name_displayed_for_show(self):
+        # Only one test show, on real site, if there are 10 or more shows, 10 of which have at least one note, there would be 10 artists displayed
+        test_top_10_shows = Show(pk=1) 
+            
+        response = self.client.get(reverse('shows_with_most_notes'), kwargs={'top_10_shows': test_top_10_shows})
+
+        self.assertContains(response, 'REM')
+
+    def test_venue_name_displayed_for_show(self):
+        # Only one test show, on real site, if there are 10 or more shows, 10 of which have at least one note, there would be 10 venues displayed
+        test_top_10_shows = Show(pk=1) 
+            
+        response = self.client.get(reverse('shows_with_most_notes'), kwargs={'top_10_shows': test_top_10_shows})
+
+        self.assertContains(response, 'The Turf Club')
+    
+    def test_note_count_displayed_for_show(self):
+        # Only one test show, on real site, if there are 10 or more shows, 10 of which have at least one note, there would be 10 venues displayed
+        test_show = Show(pk=1) 
+            
+        response = self.client.get(reverse('shows_with_most_notes'), kwargs={'top_5_shows': test_show})
+
+        self.assertContains(response, 'Number of <a href="/notes/for_show/1/">notes</a>: 4') # 'notes' is a link to the notes list about given show
+
+    def test_only_shows_with_notes_displayed_on_page(self):
+        all_shows = Show.objects.all()  # Contains 5 shows, 4 have notes, 1 does not
+
+        response = self.client.post(reverse('shows_with_most_notes'), shows=all_shows)  # Post to view with all shows from fixture
+        top_5_shows = response.context['top_5_shows']  # View should return only 4 shows, each with at least one note
+
+        self.assertEqual(len(top_5_shows), 4)  # Extra show with no notes should not be added to page
+
+    def test_shows_with_most_notes_ordered_by_show_date_desc(self):
+        # Make sure that shows are displayed from top to bottom by most recent show date, then number of notes
+        shows_with_different_num_notes = Show.objects.all()
+
+        response = self.client.post(reverse('shows_with_most_notes'), shows=shows_with_different_num_notes)  # Post to view with all shows
+        top_5_shows = response.context['top_5_shows']
+        
+        expected_pks = [3, 4, 2 ,1]
+        actual_pks = [show.pk for show in top_5_shows]
+        self.assertEqual(expected_pks, actual_pks)  # Assert that the view returns shows in the correct order
+                         
+    def test_header_displays_correct_number_for_num_top_shows(self):
+        # Make sure that the number displayed at the top of the page 'Top {num shows} shows with the most notes'
+        # For how many shows are displayed 
+
+        all_shows = Show.objects.all() 
+
+        response = self.client.post(reverse('shows_with_most_notes'), shows=all_shows)  # Post to view with all shows from fixture
+
+        self.assertContains(response, 'Top 4 most recent shows with the most notes')  # Assert that response contains the correct number displayed
 
 
 class TestUserAuthentication(TestCase):

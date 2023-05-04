@@ -618,6 +618,115 @@ class TestUserProfile(TestCase):
         self.assertContains(response, 'b@b.com')
 
 
+class TestUserPasswordChange(TestCase):
+
+    fixtures = ['testing_users']
+
+    def test_unauthenticated_user_cannot_access_page(self):
+        # Unauthenticated users should not be able to access change_user_password page
+        response = self.client.get(reverse('change_user_password', kwargs={'user_pk': 1}), follow=True) 
+        # Should redirect to login; which will then redirect to the /user/change_password/1/ page on success.
+        self.assertRedirects(response, '/accounts/login/?next=/user/change_password/1/')
+
+    def test_user_cannot_change_other_users_password(self):
+        # Users should not be able to change a password that isn't their own
+        logged_in_user = User.objects.get(pk=1)  # Alice
+        self.client.force_login(logged_in_user)
+
+        response = self.client.get(reverse('change_user_password', kwargs={'user_pk': 2}), follow=True)  # Bob's change password URL
+
+        self.assertTemplateUsed(response, '403.html')  # Assert that Alice gets redirected to 403 template 
+        self.assertTemplateUsed(response, 'lmn/base.html')
+
+    def test_user_password_changed_successfully(self):
+        # Have to create new user - fixture users' passwords do not pass requirements
+        logged_in_user = User.objects.create_user(username='test', password='testPASSword12')
+        self.client.force_login(logged_in_user)
+
+        response = self.client.post(
+            reverse('change_user_password', kwargs={'user_pk': 4}), 
+            {'old_password': 'testPASSword12', 'new_password1': 'Hello-World187', 'new_password2': 'Hello-World187'}, 
+            follow=True)
+        
+        logged_in_user.refresh_from_db()  # Refresh user instance in database
+
+        self.assertTrue(logged_in_user.check_password('Hello-World187'))  # Assert user's password updated 
+
+    def test_user_session_auth_hash_changed_when_password_changes(self):
+        logged_in_user = User.objects.create_user(username='test', password='password123')
+        self.client.force_login(logged_in_user)
+
+        # Make POST request to change password
+        response = self.client.post(
+            reverse('change_user_password', kwargs={'user_pk': logged_in_user.pk}),
+            {'old_password': 'password123', 'new_password1': 'newpassword123', 'new_password2': 'newpassword123'},
+            follow=True
+        )
+
+        # Check that the session auth hash is updated
+        session = self.client.session
+        self.assertTrue(session.get('SESSION_HASH_CHANGED', True))
+
+    def test_user_redirected_to_profile_page_when_password_successfully_changed(self):
+        logged_in_user = User.objects.create_user(username='test', password='password123')
+        self.client.force_login(logged_in_user)
+
+        # Make POST request to change password
+        response = self.client.post(
+            reverse('change_user_password', kwargs={'user_pk': logged_in_user.pk}),
+            {'old_password': 'password123', 'new_password1': 'newpassword123', 'new_password2': 'newpassword123'},
+            follow=True
+        )
+
+        self.assertRedirects(response, '/user/profile/4/')
+
+    def test_password_change_template_used(self):
+
+        logged_in_user = User.objects.get(pk=1)
+        self.client.force_login(logged_in_user)
+
+        response = self.client.get(reverse('change_user_password', kwargs={'user_pk': 1}), follow=True)
+
+        self.assertTemplateUsed(response, 'lmn/users/change_user_password.html')
+
+    def test_error_message_shown_when_old_password_incorrect(self):
+        logged_in_user = User.objects.create_user(username='test', password='password123')
+        self.client.force_login(logged_in_user)
+
+        # Make POST request to change password with incorrect old password
+        response = self.client.post(
+            reverse('change_user_password', kwargs={'user_pk': logged_in_user.pk}),
+            {'old_password': 'incorrect_password', 'new_password1': 'newpassword123', 'new_password2': 'newpassword123'},
+            follow=True
+        )
+
+        self.assertContains(response, 'Your old password was entered incorrectly. Please enter it again.')
+
+    def test_error_message_shown_when_new_passwords_dont_match(self):
+        logged_in_user = User.objects.create_user(username='test', password='password123')
+        self.client.force_login(logged_in_user)
+
+        # Make POST request to change password with incorrect old password
+        response = self.client.post(
+            reverse('change_user_password', kwargs={'user_pk': logged_in_user.pk}),
+            {'old_password': 'password123', 'new_password1': 'password', 'new_password2': 'mismatched_password'},
+            follow=True
+        )
+
+        self.assertContains(response, 'The two password fields didn’t match.')
+
+    def test_user_cannot_see_change_password_button_on_other_user_profile(self):
+        logged_in_user = User.objects.get(pk=3)  # cat
+        self.client.force_login(logged_in_user)
+        response = self.client.get(reverse('user_profile', kwargs={'user_pk': 1}))  # Alice's profile
+        self.assertNotContains(response, 'Change Password')  # Ensure that user's cannot see button including this text
+    
+    def test_unauthenticated_user_cannot_see_change_password_button(self):
+        # No logged in user. Should not be able to see change password button
+        response = self.client.get(reverse('user_profile', kwargs={'user_pk': 1}))  # Alice's profile
+        self.assertNotContains(response, 'Change Password')  # Ensure that user's cannot see button including this text
+
+
 class TestNotes(TestCase):
     # Have to add Notes and Users and Show, and also artists and venues because of foreign key constrains in Show
     fixtures = ['testing_users', 'testing_artists', 'testing_venues', 'testing_shows', 'testing_notes'] 

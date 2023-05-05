@@ -9,7 +9,7 @@ import re
 import datetime
 from datetime import timezone
 
-from lmn.models import Note
+from lmn.models import Note, Show
 from django.contrib.auth.models import User
 
 
@@ -36,6 +36,10 @@ class TestEmptyViews(TestCase):
     def test_with_no_notes_returns_empty_list(self):
         response = self.client.get(reverse('latest_notes'))
         self.assertFalse(response.context['notes'])  # An empty list is false
+
+    def test_with_no_shows_returns_empty_list(self):
+        response = self.client.get(reverse('shows_with_most_notes'))
+        self.assertFalse(response.context['top_5_shows'])  # An empty list is false
 
 
 class TestArtistViews(TestCase):
@@ -614,6 +618,115 @@ class TestUserProfile(TestCase):
         self.assertContains(response, 'b@b.com')
 
 
+class TestUserPasswordChange(TestCase):
+
+    fixtures = ['testing_users']
+
+    def test_unauthenticated_user_cannot_access_page(self):
+        # Unauthenticated users should not be able to access change_user_password page
+        response = self.client.get(reverse('change_user_password', kwargs={'user_pk': 1}), follow=True) 
+        # Should redirect to login; which will then redirect to the /user/change_password/1/ page on success.
+        self.assertRedirects(response, '/accounts/login/?next=/user/change_password/1/')
+
+    def test_user_cannot_change_other_users_password(self):
+        # Users should not be able to change a password that isn't their own
+        logged_in_user = User.objects.get(pk=1)  # Alice
+        self.client.force_login(logged_in_user)
+
+        response = self.client.get(reverse('change_user_password', kwargs={'user_pk': 2}), follow=True)  # Bob's change password URL
+
+        self.assertTemplateUsed(response, '403.html')  # Assert that Alice gets redirected to 403 template 
+        self.assertTemplateUsed(response, 'lmn/base.html')
+
+    def test_user_password_changed_successfully(self):
+        # Have to create new user - fixture users' passwords do not pass requirements
+        logged_in_user = User.objects.create_user(username='test', password='testPASSword12')
+        self.client.force_login(logged_in_user)
+
+        response = self.client.post(
+            reverse('change_user_password', kwargs={'user_pk': 4}), 
+            {'old_password': 'testPASSword12', 'new_password1': 'Hello-World187', 'new_password2': 'Hello-World187'}, 
+            follow=True)
+        
+        logged_in_user.refresh_from_db()  # Refresh user instance in database
+
+        self.assertTrue(logged_in_user.check_password('Hello-World187'))  # Assert user's password updated 
+
+    def test_user_session_auth_hash_changed_when_password_changes(self):
+        logged_in_user = User.objects.create_user(username='test', password='password123')
+        self.client.force_login(logged_in_user)
+
+        # Make POST request to change password
+        response = self.client.post(
+            reverse('change_user_password', kwargs={'user_pk': logged_in_user.pk}),
+            {'old_password': 'password123', 'new_password1': 'newpassword123', 'new_password2': 'newpassword123'},
+            follow=True
+        )
+
+        # Check that the session auth hash is updated
+        session = self.client.session
+        self.assertTrue(session.get('SESSION_HASH_CHANGED', True))
+
+    def test_user_redirected_to_profile_page_when_password_successfully_changed(self):
+        logged_in_user = User.objects.create_user(username='test', password='password123')
+        self.client.force_login(logged_in_user)
+
+        # Make POST request to change password
+        response = self.client.post(
+            reverse('change_user_password', kwargs={'user_pk': logged_in_user.pk}),
+            {'old_password': 'password123', 'new_password1': 'newpassword123', 'new_password2': 'newpassword123'},
+            follow=True
+        )
+
+        self.assertRedirects(response, '/user/profile/4/')
+
+    def test_password_change_template_used(self):
+
+        logged_in_user = User.objects.get(pk=1)
+        self.client.force_login(logged_in_user)
+
+        response = self.client.get(reverse('change_user_password', kwargs={'user_pk': 1}), follow=True)
+
+        self.assertTemplateUsed(response, 'lmn/users/change_user_password.html')
+
+    def test_error_message_shown_when_old_password_incorrect(self):
+        logged_in_user = User.objects.create_user(username='test', password='password123')
+        self.client.force_login(logged_in_user)
+
+        # Make POST request to change password with incorrect old password
+        response = self.client.post(
+            reverse('change_user_password', kwargs={'user_pk': logged_in_user.pk}),
+            {'old_password': 'incorrect_password', 'new_password1': 'newpassword123', 'new_password2': 'newpassword123'},
+            follow=True
+        )
+
+        self.assertContains(response, 'Your old password was entered incorrectly. Please enter it again.')
+
+    def test_error_message_shown_when_new_passwords_dont_match(self):
+        logged_in_user = User.objects.create_user(username='test', password='password123')
+        self.client.force_login(logged_in_user)
+
+        # Make POST request to change password with incorrect old password
+        response = self.client.post(
+            reverse('change_user_password', kwargs={'user_pk': logged_in_user.pk}),
+            {'old_password': 'password123', 'new_password1': 'password', 'new_password2': 'mismatched_password'},
+            follow=True
+        )
+
+        self.assertContains(response, 'The two password fields didn’t match.')
+
+    def test_user_cannot_see_change_password_button_on_other_user_profile(self):
+        logged_in_user = User.objects.get(pk=3)  # cat
+        self.client.force_login(logged_in_user)
+        response = self.client.get(reverse('user_profile', kwargs={'user_pk': 1}))  # Alice's profile
+        self.assertNotContains(response, 'Change Password')  # Ensure that user's cannot see button including this text
+    
+    def test_unauthenticated_user_cannot_see_change_password_button(self):
+        # No logged in user. Should not be able to see change password button
+        response = self.client.get(reverse('user_profile', kwargs={'user_pk': 1}))  # Alice's profile
+        self.assertNotContains(response, 'Change Password')  # Ensure that user's cannot see button including this text
+
+
 class TestNotes(TestCase):
     # Have to add Notes and Users and Show, and also artists and venues because of foreign key constrains in Show
     fixtures = ['testing_users', 'testing_artists', 'testing_venues', 'testing_shows', 'testing_notes'] 
@@ -761,6 +874,69 @@ class TestNotes(TestCase):
         
         self.assertContains(response,'testing')
         self.assertContains(response,'Testing note created')
+
+
+class TestShowsWithMostNotesPage(TestCase):
+    # Have to add Notes, Users, and Shows, and also artists and venues because of foreign key constrains in Show
+    fixtures = ['testing_users', 'testing_artists', 'testing_venues', 'testing_shows_most_notes', 'testing_notes_for_top_shows']
+
+    def test_list_shows_most_notes_correct_template_used(self): 
+
+        response = self.client.get(reverse('shows_with_most_notes'))
+        self.assertTemplateUsed(response, 'lmn/shows/shows_with_most_notes.html')
+    
+    def test_artist_name_displayed_for_show(self):
+        # Only one test show, on real site, if there are 10 or more shows, 10 of which have at least one note, there would be 10 artists displayed
+        test_top_10_shows = Show(pk=1) 
+            
+        response = self.client.get(reverse('shows_with_most_notes'), kwargs={'top_10_shows': test_top_10_shows})
+
+        self.assertContains(response, 'REM')
+
+    def test_venue_name_displayed_for_show(self):
+        # Only one test show, on real site, if there are 10 or more shows, 10 of which have at least one note, there would be 10 venues displayed
+        test_top_10_shows = Show(pk=1) 
+            
+        response = self.client.get(reverse('shows_with_most_notes'), kwargs={'top_10_shows': test_top_10_shows})
+
+        self.assertContains(response, 'The Turf Club')
+    
+    def test_note_count_displayed_for_show(self):
+        # Only one test show, on real site, if there are 10 or more shows, 10 of which have at least one note, there would be 10 venues displayed
+        test_show = Show(pk=1) 
+            
+        response = self.client.get(reverse('shows_with_most_notes'), kwargs={'top_5_shows': test_show})
+
+        self.assertContains(response, 'Number of <a href="/notes/for_show/1/">notes</a>: 4') # 'notes' is a link to the notes list about given show
+
+    def test_only_shows_with_notes_displayed_on_page(self):
+        all_shows = Show.objects.all()  # Contains 5 shows, 4 have notes, 1 does not
+
+        response = self.client.post(reverse('shows_with_most_notes'), shows=all_shows)  # Post to view with all shows from fixture
+        top_5_shows = response.context['top_5_shows']  # View should return only 4 shows, each with at least one note
+
+        self.assertEqual(len(top_5_shows), 4)  # Extra show with no notes should not be added to page
+
+    def test_shows_with_most_notes_ordered_by_show_date_desc(self):
+        # Make sure that shows are displayed from top to bottom by most recent show date, then number of notes
+        shows_with_different_num_notes = Show.objects.all()
+
+        response = self.client.post(reverse('shows_with_most_notes'), shows=shows_with_different_num_notes)  # Post to view with all shows
+        top_5_shows = response.context['top_5_shows']
+        
+        expected_pks = [3, 4, 2 ,1]
+        actual_pks = [show.pk for show in top_5_shows]
+        self.assertEqual(expected_pks, actual_pks)  # Assert that the view returns shows in the correct order
+                         
+    def test_header_displays_correct_number_for_num_top_shows(self):
+        # Make sure that the number displayed at the top of the page 'Top {num shows} shows with the most notes'
+        # For how many shows are displayed 
+
+        all_shows = Show.objects.all() 
+
+        response = self.client.post(reverse('shows_with_most_notes'), shows=all_shows)  # Post to view with all shows from fixture
+
+        self.assertContains(response, 'Top 4 most recent shows with the most notes')  # Assert that response contains the correct number displayed
 
 
 class TestUserAuthentication(TestCase):

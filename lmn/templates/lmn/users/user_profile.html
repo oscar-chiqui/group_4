@@ -20,6 +20,10 @@
       <form class="edit-profile" method="link" action="{% url 'edit_user_account_info' user_pk=request.user.pk %}">
         <button class="edit-btn">Edit Account Info</button>
       </form>
+      
+      <form class="change-password" method="link" action="{% url 'change_user_password' user_pk=user.pk %}">
+        <button>Change password</button>
+      </form>
     </div>
   {% endif %}
 
@@ -35,6 +39,6 @@
       <p class="note-posted-at">{{ note.posted_date }}</p>
     </div>
   {% empty %}
-    <p id="no-records">No notes.</p>
+    <p class="no-records">No notes.</p>
   {% endfor %}
 {% endblock %}

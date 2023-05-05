@@ -25,14 +25,10 @@
             <a href="{% url 'venue_detail' venue_pk=venue.pk %}">{{ venue.name }}</a>
           </p>
           <p class="venue-location">{{ venue.city }}, {{ venue.state }}</p>
-          <p class="venue-notes">
-            <a href='{% url "artists_at_venue" venue_pk=venue.pk %}'>
-              See artists, notes, and add your own notes for {{ venue.name }}
-            </a>
-          </p>
+          <p class="venue-notes">See artists, notes, and add your own <a href='{% url "artists_at_venue" venue_pk=venue.pk %}'>{{ venue.name }} notes</a></p>
         </div>
       {% empty %}
-        <p class="no-venues-found">No venues found</p>
+        <p class="no-records">No venues found</p>
       {% endfor %}
     </div>
   </div>

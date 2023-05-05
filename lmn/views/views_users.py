@@ -6,6 +6,8 @@ from django.contrib.auth import authenticate, login
 from django.contrib.messages import get_messages
 from django.contrib.auth.signals import user_logged_out
 from django.dispatch import receiver
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.forms import PasswordChangeForm
 
 from ..forms import UserRegistrationForm, UserUpdateForm
 from ..models import Note
@@ -58,7 +60,28 @@ def edit_user_account_info(request, user_pk):
             return render(request, 'lmn/users/edit_user_account_info.html', {'form': form})
 
     return render(request, 'lmn/users/edit_user_account_info.html', {'form': form})
-    
+
+
+@login_required
+def change_user_password(request, user_pk):
+    """ Handles changing the logged-in user's password """
+    user = User.objects.get(pk=user_pk)
+    form = PasswordChangeForm(user=user)
+
+    if request.user != user: # Ensure that user is authenticated to change the password
+        return render(request, '403.html')
+
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)  # Update user session hash for security
+            messages.success(request, 'Your password was successfully updated!', extra_tags='success-message')
+            return redirect('user_profile', user_pk=request.user.pk)
+
+    return render(request, 'lmn/users/change_user_password.html', {'form': form})
+
 
 def register(request):
     """ Handles user registration flow

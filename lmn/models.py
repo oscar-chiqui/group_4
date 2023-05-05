@@ -40,6 +40,9 @@ class Show(models.Model):
     def __str__(self):
         return f'Artist: {self.artist} At: {self.venue} On: {self.show_date}'
 
+    @property
+    def note_count(self):
+        return self.note_set.count()
 
 class Note(models.Model):
     """ One User's opinion of one Show. """

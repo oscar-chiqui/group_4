@@ -94,4 +94,17 @@ def delete_confirmation(request, note_pk):
             return redirect('note_detail', note_pk=note.pk)
     
     return render(request, 'lmn/notes/note_delete_confirmation.html', {'note' : note})
+    
+    
+def search_notes(request):
+    """ Search notes by keyword """
+    query = request.GET.get('q')
+    
+    if query:
+        notes = Note.objects.filter(content__icontains=query)
+        title = f'Search Results for "{query}"'
+    else:
+        notes = Note.objects.none()
+        title = 'Search'
         
+    return render(request, 'lmn/notes/note_list.html', {'notes': notes, 'title': title})

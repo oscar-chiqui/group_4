@@ -1,0 +1,16 @@
+<!-- notes/search_results.html-->
+
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Search Results</h1>
+    {% if notes %}
+        <ul>
+        {% for note in notes %}
+            <li><a href="{% url 'notes_detail' note.pk %}">{{ note.title}}</a></li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No notes found.</p>
+    {% endif %}
+{% endblock %}
